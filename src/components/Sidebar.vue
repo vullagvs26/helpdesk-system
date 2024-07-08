@@ -21,6 +21,49 @@ library.add(faTicket, faSignOutAlt, faSquarePlus);
     </div>
     <nav class="flex-1">
       <div class="py-4 px-4">
+        <!-- Monitoring Section -->
+        <p class="mt-10 mb-4 text-gray-400 font-bold text-opacity-90">
+          Monitoring
+        </p>
+        <router-link to="/Dashboard" class="no-underline">
+          <p
+            class="py-2 px-5 items-center font-semibold hover:text-blue-500"
+            :class="{ 'text-blue-500': $route.path === '/Dashboard' }"
+          >
+            Dashboard
+          </p>
+        </router-link>
+        <router-link to="/Tickets" class="no-underline">
+          <p
+            class="py-2 px-5 items-center font-semibold hover:text-blue-500"
+            :class="{ 'text-blue-500': $route.path === '/Tickets' }"
+          >
+            Tickets
+          </p>
+        </router-link>
+
+        <!-- Management Section -->
+        <p class="mt-10 mb-4 text-gray-400 font-bold text-opacity-90">
+          Management
+        </p>
+        <router-link to="/Developers" class="no-underline">
+          <p
+            class="py-2 px-5 items-center font-semibold hover:text-blue-500"
+            :class="{ 'text-blue-500': $route.path === '/Developers' }"
+          >
+            Developers
+          </p>
+        </router-link>
+        <router-link to="/Systems" class="no-underline">
+          <p
+            class="py-2 px-5 items-center font-semibold hover:text-blue-500"
+            :class="{ 'text-blue-500': $route.path === '/Systems' }"
+          >
+            Systems
+          </p>
+        </router-link>
+
+        <!-- Self-Service Section -->
         <p class="mt-10 mb-4 text-gray-400 font-bold text-opacity-90">
           Self-Service
         </p>
