@@ -9,6 +9,7 @@ import {
   faInfoCircle,
   faBars,
 } from "@fortawesome/free-solid-svg-icons";
+import axios from 'axios'
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 library.add(faUser, faInfoCircle, faBars);
@@ -21,3 +22,6 @@ app.use(router);
 app.use(pinia);
 app.mount("#app");
 app.component("font-awesome-icon", FontAwesomeIcon);
+
+
+axios.defaults.baseURL = 'http://10.164.58.18/my-projects/helpdesk-system-be/public/api'
