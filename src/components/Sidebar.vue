@@ -5,9 +5,12 @@ import {
   faTicket,
   faSignOutAlt,
   faSquarePlus,
+  faTableColumns,
+  faUser,
+  faDesktop,
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faTicket, faSignOutAlt, faSquarePlus);
+library.add(faTicket, faSignOutAlt, faSquarePlus, faTableColumns, faUser, faDesktop);
 </script>
 
 <template>
@@ -30,6 +33,10 @@ library.add(faTicket, faSignOutAlt, faSquarePlus);
             class="py-2 px-5 items-center font-semibold hover:text-blue-500"
             :class="{ 'text-blue-500': $route.path === '/Dashboard' }"
           >
+          <font-awesome-icon
+              :icon="['fas', 'table-columns']"
+              class="mr-2"
+            ></font-awesome-icon>
             Dashboard
           </p>
         </router-link>
@@ -38,6 +45,10 @@ library.add(faTicket, faSignOutAlt, faSquarePlus);
             class="py-2 px-5 items-center font-semibold hover:text-blue-500"
             :class="{ 'text-blue-500': $route.path === '/Tickets' }"
           >
+          <font-awesome-icon
+              :icon="['fas', 'ticket']"
+              class="mr-2"
+            ></font-awesome-icon>
             Tickets
           </p>
         </router-link>
@@ -51,6 +62,10 @@ library.add(faTicket, faSignOutAlt, faSquarePlus);
             class="py-2 px-5 items-center font-semibold hover:text-blue-500"
             :class="{ 'text-blue-500': $route.path === '/Developers' }"
           >
+          <font-awesome-icon
+              :icon="['fas', 'user']"
+              class="mr-2"
+            ></font-awesome-icon>
             Developers
           </p>
         </router-link>
@@ -59,6 +74,10 @@ library.add(faTicket, faSignOutAlt, faSquarePlus);
             class="py-2 px-5 items-center font-semibold hover:text-blue-500"
             :class="{ 'text-blue-500': $route.path === '/Systems' }"
           >
+          <font-awesome-icon
+              :icon="['fas', 'desktop']"
+              class="mr-2"
+            ></font-awesome-icon>
             Systems
           </p>
         </router-link>
@@ -67,18 +86,7 @@ library.add(faTicket, faSignOutAlt, faSquarePlus);
         <p class="mt-10 mb-4 text-gray-400 font-bold text-opacity-90">
           Self-Service
         </p>
-        <router-link to="/MyTickets" class="no-underline">
-          <p
-            class="py-2 px-5 items-center font-semibold hover:text-blue-500"
-            :class="{ 'text-blue-500': $route.path === '/MyTickets' }"
-          >
-            <font-awesome-icon
-              :icon="['fas', 'ticket']"
-              class="mr-2"
-            ></font-awesome-icon>
-            My Tickets
-          </p>
-        </router-link>
+        
         <router-link to="/CreateTicket" class="no-underline">
           <p
             class="py-2 px-5 items-center font-semibold hover:text-blue-500"

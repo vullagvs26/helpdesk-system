@@ -1,16 +1,16 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
 
-const MyTickets = () => import('@/views/MyTickets.vue');
+const Tickets = () => import('@/views/Tickets.vue');
 const CreateTicket = () => import('@/views/CreateTicket.vue');
 
 
 
 const routes = [
     {
-        path: '/MyTickets',
-        name: 'MyTickets',
-        component: MyTickets
+        path: '/Tickets',
+        name: 'Tickets',
+        component: Tickets
     },
     {
         path: '/CreateTicket',

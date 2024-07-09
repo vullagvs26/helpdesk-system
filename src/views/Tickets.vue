@@ -39,7 +39,7 @@ const openModal = (ticket) => {
 
 const closeModal = () => {
   showModal.value = false;
-};
+}; //------------------//
 
 const saveChanges = () => {
   const index = tickets.value.findIndex(t => t.number === editTicket.value.number);
