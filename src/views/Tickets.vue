@@ -1,56 +1,3 @@
-<script setup>
-import { ref } from 'vue';
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSearch, faEdit, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-
-library.add(faSearch, faEdit, faCheck, faTimes);
-
-//sample data
-const tickets = ref([
-  {
-    number: "INC1243124",
-    assignedTo: "vincent.vullag@fujitsu.com",
-    description: "Can't add new user",
-    status: "Active",
-  },
-  {
-    number: "INC1243125",
-    assignedTo: "vincent.vullag@fujitsu.com",
-    description: "Can't add new user",
-    status: "On-going",
-  },
-  {
-    number: "INC1243126",
-    assignedTo: "vincent.vullag@fujitsu.com",
-    description: "Can't add new user",
-    status: "Closed",
-  },
-]);
-
-//modal function
-const showModal = ref(false);
-const editTicket = ref({});
-
-const openModal = (ticket) => {
-  editTicket.value = { ...ticket };
-  showModal.value = true;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-}; //------------------//
-
-const saveChanges = () => {
-  const index = tickets.value.findIndex(t => t.number === editTicket.value.number);
-  if (index !== -1) {
-    tickets.value[index] = { ...editTicket.value };
-  }
-  closeModal();
-};
-</script>
-
-
 <template>
   <div class="p-6">
     <div class="flex items-center justify-between mb-4">
@@ -72,9 +19,9 @@ const saveChanges = () => {
           </tr>
         </thead>
         <tbody class="text-center">
-          <tr v-for="(ticket, index) in tickets" :key="index">
-            <td class="py-2 px-4 border-b">{{ ticket.number }}</td>
-            <td class="py-2 px-4 border-b">{{ ticket.assignedTo }}</td>
+          <tr v-for="(ticket, i) in ticketStore.getLoadTicket" :key="i" class="border-t border-b">
+            <td class="py-2 px-4 border-b">{{ ticket.ticket_no }}</td>
+            <td class="py-2 px-4 border-b">{{ ticket.type_of_ticket }}</td>
             <td class="py-2 px-4 border-b">{{ ticket.description }}</td>
             <td class="py-2 px-4 border-b">
               <span :class="{
@@ -89,7 +36,7 @@ const saveChanges = () => {
               <button class="mr-2" @click="openModal(ticket)">
                 <font-awesome-icon :icon="['fas', 'edit']" class="text-blue-500" />
               </button>
-              <button>
+              <button @click="deleteTicket(ticket.id)">
                 <font-awesome-icon :icon="['fas', 'check']" class="text-green-500" />
               </button>
             </td>
@@ -109,11 +56,11 @@ const saveChanges = () => {
         </div>
         <div class="flex flex-col mb-4">
           <label for="number" class="font-semibold">Ticket No.</label>
-          <input type="text" id="number" v-model="editTicket.number" class="border bg-gray-400 border-gray-300 p-2 rounded" readonly />
+          <input type="text" id="number" v-model="editTicket.ticket_no" class="border bg-gray-400 border-gray-300 p-2 rounded" readonly />
         </div>
         <div class="flex flex-col mb-4">
           <label for="assignedTo" class="font-semibold">Assigned To</label>
-          <input type="text" id="assignedTo" v-model="editTicket.assignedTo" class="border bg-gray-400 border-gray-300 p-2 rounded"  readonly/>
+          <input type="text" id="assignedTo" v-model="editTicket.type_of_ticket" class="border bg-gray-400 border-gray-300 p-2 rounded" readonly />
         </div>
         <div class="flex flex-col mb-4">
           <label for="description" class="font-semibold">Short Description</label>
@@ -123,7 +70,8 @@ const saveChanges = () => {
           <label for="status" class="font-semibold">Status</label>
           <select id="status" v-model="editTicket.status" class="border border-gray-300 p-2 rounded">
             <option value="Active">Active</option>
-            
+            <option value="On-going">On-going</option>
+            <option value="Closed">Closed</option>
           </select>
         </div>
         <div class="flex justify-end">
@@ -135,6 +83,56 @@ const saveChanges = () => {
   </div>
 </template>
 
+<script setup>
+import { useTicketStore } from "@/modules/ticket.js";
+import { ref, onMounted } from 'vue';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faSearch, faEdit, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faSearch, faEdit, faCheck, faTimes);
+
+// Modal state and functions
+const showModal = ref(false);
+const editTicket = ref({});
+
+const openModal = (ticket) => {
+  editTicket.value = { ...ticket };
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
+
+// Access the store
+const ticketStore = useTicketStore();
+
+// Load tickets when component mounts
+onMounted(() => {
+  ticketStore.setLoadTicket()
+    .then(() => console.log('Tickets loaded:', ticketStore.getLoadTicket))
+    .catch((error) => console.error('Error loading tickets:', error));
+});
+
+// Delete ticket action
+const deleteTicket = (ticketId) => {
+  ticketStore.setDeleteTicket(ticketId)
+    .then(() => {
+      // Refresh tickets after deletion (if needed)
+      ticketStore.setLoadTicket();
+    })
+    .catch((error) => {
+      console.error('Error deleting ticket:', error);
+    });
+};
+
+// Save changes function (if needed)
+const saveChanges = () => {
+  // Implement save changes logic
+  closeModal();
+};
+</script>
 
 <style scoped>
 /* Add any additional styling if necessary */
