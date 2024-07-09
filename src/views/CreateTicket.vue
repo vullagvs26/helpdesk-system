@@ -46,7 +46,7 @@ const submitForm = () => {
               id="name"
               v-model="form.name"
               class="border border-gray-300 p-2 rounded"
-              placeholder="Input Your Name"
+              placeholder="(Ex: Vullag, Vincent)"
             />
           </div>
           <div class="flex flex-col">
