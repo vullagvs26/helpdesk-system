@@ -11,9 +11,6 @@ library.add(faBars);
       >MIS Dev Team Help Desk System</span
     >
   </div>
-
-  
 </template>
-
 
 <style scoped></style>

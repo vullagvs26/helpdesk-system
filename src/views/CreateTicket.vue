@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6">
+  <div class="p-6 h-full">
     <div class="flex justify-between">
       <h2 class="text-xl font-bold text-blue-500 mb-4 mt-4">Create a new ticket</h2>
       <button
@@ -10,9 +10,10 @@
         Send Request
       </button>
     </div>
-    <div class="bg-white border shadow-lg rounded-lg p-6">
+    <div class="bg-white border shadow-lg rounded-lg p-6 overflow-auto h-5/6">
       <form @submit.prevent="submitTicketForm">
         <div class="grid grid-cols-1 gap-4">
+          <!-- Form Fields -->
           <div class="flex flex-col">
             <label for="ticketNo" class="mb-1 font-semibold">Ticket Number</label>
             <input
@@ -22,7 +23,7 @@
               class="border border-gray-300 p-2 rounded"
               placeholder="Enter Ticket Number"
             />
-            <span v-if="errors.ticket_no" class="text-red-500">{{ errors.ticket_no[0] }}</span> <!-- Added error display -->
+            <span v-if="errors.ticket_no" class="text-red-500">{{ errors.ticket_no[0] }}</span>
           </div>
           <div class="flex flex-col">
             <label for="name" class="mb-1 font-semibold">Your Name</label>
@@ -33,7 +34,7 @@
               class="border border-gray-300 p-2 rounded"
               placeholder="(Ex: Vullag, Vincent)"
             />
-            <span v-if="errors.full_name" class="text-red-500">{{ errors.full_name[0] }}</span> <!-- Added error display -->
+            <span v-if="errors.full_name" class="text-red-500">{{ errors.full_name[0] }}</span>
           </div>
           <div class="flex flex-col">
             <label for="email" class="mb-1 font-semibold">Your Email</label>
@@ -44,7 +45,7 @@
               class="border border-gray-300 p-2 rounded"
               placeholder="Input Your Email"
             />
-            <span v-if="errors.email" class="text-red-500">{{ errors.email[0] }}</span> <!-- Added error display -->
+            <span v-if="errors.email" class="text-red-500">{{ errors.email[0] }}</span>
           </div>
           <div class="flex flex-col">
             <label for="typeOfTicket" class="mb-1 font-semibold">Type of Ticket</label>
@@ -58,7 +59,7 @@
                 {{ type.name }}
               </option>
             </select>
-            <span v-if="errors.type_of_ticket" class="text-red-500">{{ errors.type_of_ticket[0] }}</span> <!-- Added error display -->
+            <span v-if="errors.type_of_ticket" class="text-red-500">{{ errors.type_of_ticket[0] }}</span>
           </div>
           <div class="flex flex-col">
             <label for="impact" class="mb-1 font-semibold">Impact</label>
@@ -72,7 +73,7 @@
               <option value="Medium">Medium</option>
               <option value="High">High</option>
             </select>
-            <span v-if="errors.impact" class="text-red-500">{{ errors.impact[0] }}</span> <!-- Added error display -->
+            <span v-if="errors.impact" class="text-red-500">{{ errors.impact[0] }}</span>
           </div>
           <div class="flex flex-col">
             <label for="status" class="mb-1 font-semibold">Status</label>
@@ -86,7 +87,7 @@
                 {{ status.name }}
               </option>
             </select>
-            <span v-if="errors.status" class="text-red-500">{{ errors.status[0] }}</span> <!-- Added error display -->
+            <span v-if="errors.status" class="text-red-500">{{ errors.status[0] }}</span>
           </div>
           <div class="flex flex-col">
             <label for="systemName" class="mb-1 font-semibold">System Name</label>
@@ -104,7 +105,7 @@
                 {{ system.system_name }}
               </option>
             </select>
-            <span v-if="errors.system_name_id" class="text-red-500">{{ errors.system_name_id[0] }}</span> <!-- Added error display -->
+            <span v-if="errors.system_name_id" class="text-red-500">{{ errors.system_name_id[0] }}</span>
           </div>
           <div class="flex flex-col">
             <label for="assignedTo" class="mb-1 font-semibold">Assigned To</label>
@@ -119,10 +120,10 @@
                 :key="i"
                 :value="developer.id"
               >
-                {{ developer.email }}  <!-- Display developer's email -->
+                {{ developer.email }}
               </option>
             </select>
-            <span v-if="errors.assigned_to_id" class="text-red-500">{{ errors.assigned_to_id[0] }}</span> <!-- Added error display -->
+            <span v-if="errors.assigned_to_id" class="text-red-500">{{ errors.assigned_to_id[0] }}</span>
           </div>
           <div class="flex flex-col">
             <label for="description" class="mb-1 font-semibold">Short Description</label>
@@ -133,7 +134,7 @@
               rows="4"
               placeholder="Describe your request or error encountered"
             ></textarea>
-            <span v-if="errors.description" class="text-red-500">{{ errors.description[0] }}</span> <!-- Added error display -->
+            <span v-if="errors.description" class="text-red-500">{{ errors.description[0] }}</span>
           </div>
           <!-- Add Image Upload Field -->
           <div class="flex flex-col">
@@ -144,7 +145,7 @@
               @change="handleImageUpload"
               class="border border-gray-300 p-2 rounded"
             />
-            <span v-if="errors.image" class="text-red-500">{{ errors.image[0] }}</span> <!-- Added error display -->
+            <span v-if="errors.image" class="text-red-500">{{ errors.image[0] }}</span>
           </div>
           <!-- Preview Uploaded Images -->
           <div class="mt-4 flex space-x-2">
@@ -281,3 +282,10 @@ onMounted(() => {
   developerStore.setLoadDeveloper().then((res) => console.log('Developers loaded:', res));
 });
 </script>
+
+<style scoped>
+/* Ensure the form content is scrollable */
+.bg-white.border.shadow-lg.rounded-lg.p-6.overflow-auto.h-full {
+  max-height: calc(100vh - 6rem); /* Adjust the height based on your needs */
+}
+</style>

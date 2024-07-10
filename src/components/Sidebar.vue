@@ -14,7 +14,7 @@ library.add(faTicket, faSignOutAlt, faSquarePlus, faTableColumns, faUser, faDesk
 </script>
 
 <template>
-  <div class="w-64 bg-white text-black flex flex-col">
+  <div class="w-64 bg-white text-black flex flex-col h-screen">
     <div class="flex items-center justify-center h-14 w-64 bg-white">
       <img
         src="@/assets/image/fujitsu-logo.png"
@@ -22,7 +22,7 @@ library.add(faTicket, faSignOutAlt, faSquarePlus, faTableColumns, faUser, faDesk
         alt="Fujitsu Logo"
       />
     </div>
-    <nav class="flex-1">
+    <nav class="flex-1 overflow-auto">
       <div class="py-4 px-4">
         <!-- Monitoring Section -->
         <p class="mt-10 mb-4 text-gray-400 font-bold text-opacity-90">
@@ -33,7 +33,7 @@ library.add(faTicket, faSignOutAlt, faSquarePlus, faTableColumns, faUser, faDesk
             class="py-2 px-5 items-center font-semibold hover:text-blue-500"
             :class="{ 'text-blue-500': $route.path === '/Dashboard' }"
           >
-          <font-awesome-icon
+            <font-awesome-icon
               :icon="['fas', 'table-columns']"
               class="mr-2"
             ></font-awesome-icon>
@@ -45,7 +45,7 @@ library.add(faTicket, faSignOutAlt, faSquarePlus, faTableColumns, faUser, faDesk
             class="py-2 px-5 items-center font-semibold hover:text-blue-500"
             :class="{ 'text-blue-500': $route.path === '/Tickets' }"
           >
-          <font-awesome-icon
+            <font-awesome-icon
               :icon="['fas', 'ticket']"
               class="mr-2"
             ></font-awesome-icon>
@@ -62,7 +62,7 @@ library.add(faTicket, faSignOutAlt, faSquarePlus, faTableColumns, faUser, faDesk
             class="py-2 px-5 items-center font-semibold hover:text-blue-500"
             :class="{ 'text-blue-500': $route.path === '/Developers' }"
           >
-          <font-awesome-icon
+            <font-awesome-icon
               :icon="['fas', 'user']"
               class="mr-2"
             ></font-awesome-icon>
@@ -74,7 +74,7 @@ library.add(faTicket, faSignOutAlt, faSquarePlus, faTableColumns, faUser, faDesk
             class="py-2 px-5 items-center font-semibold hover:text-blue-500"
             :class="{ 'text-blue-500': $route.path === '/Systems' }"
           >
-          <font-awesome-icon
+            <font-awesome-icon
               :icon="['fas', 'desktop']"
               class="mr-2"
             ></font-awesome-icon>
