@@ -1,3 +1,124 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useTicketStore } from '@/modules/ticket.js';  
+import { useSystemStore } from '@/modules/system.js';  
+import { useDeveloperStore } from '@/modules/developer.js'; 
+
+// Data
+const ticketStore = useTicketStore();
+const systemStore = useSystemStore();
+const developerStore = useDeveloperStore();  
+
+const ticketForm = ref({
+  id: null,
+  ticket_no: '',
+  full_name: '',
+  email: '',
+  type_of_ticket: '', 
+  impact: '',
+  status: '',  
+  system_name_id: null,
+  assigned_to_id: null,  
+  description: '',
+  image: null, // Add this field for the image file
+});
+
+const imagePreviews = ref([]);  // To store image previews
+const errors = ref({});
+
+const ticketTypes = ref([
+  { id: 1, name: 'Bug' },
+  { id: 2, name: 'Feature Request' },
+  { id: 3, name: 'Inquiry' },
+]);
+
+const ticketStatuses = ref([
+  { id: 1, name: 'Active' },
+  { id: 2, name: 'On-going' },
+  { id: 3, name: 'Closed' },
+]);
+
+const clearTicketForm = () => {
+  ticketForm.value = {
+    id: null,
+    ticket_no: '',
+    full_name: '',
+    email: '',
+    type_of_ticket: '',
+    impact: '',
+    status: '',
+    system_name_id: null,
+    system_name: '',
+    assigned_to_id: null,
+    description: '',
+    image: null, // Clear the image file
+  };
+  imagePreviews.value = [];  // Clear the image previews
+  errors.value = {};
+  document.getElementById('image').value = '';  // Clear the "No file chosen" text
+};
+
+const handleImageUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    // Store the file
+    ticketForm.value.image = file;
+
+    // Create a preview URL
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imagePreviews.value = [{ url: e.target.result, name: file.name }];
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const submitTicketForm = () => {
+  const selectedSystem = systemStore.getLoadSystem.find(system => system.id === ticketForm.value.system_name_id);
+  const assignedDeveloper = developerStore.getLoadDeveloper.find(developer => developer.id === ticketForm.value.assigned_to_id);
+  
+  const formData = new FormData();
+  formData.append('ticket_no', ticketForm.value.ticket_no);
+  formData.append('full_name', ticketForm.value.full_name);
+  formData.append('email', ticketForm.value.email);
+  formData.append('type_of_ticket', ticketForm.value.type_of_ticket);
+  formData.append('impact', ticketForm.value.impact);
+  formData.append('status', ticketForm.value.status);
+  formData.append('description', ticketForm.value.description);
+  formData.append('system_name_id', ticketForm.value.system_name_id);
+  formData.append('assigned_to_id', ticketForm.value.assigned_to_id);
+  if (ticketForm.value.image) {
+    formData.append('image', ticketForm.value.image);
+  }
+
+  const payload = {
+    system_name: selectedSystem ? selectedSystem.system_name : '',
+    assigned_to_email: assignedDeveloper ? assignedDeveloper.email : '',
+  };
+
+  console.log('Submitting form with payload:', payload);  
+
+  ticketStore.setStoreTicket(formData, payload).then((res) => {
+    if (res.status === 'success') {
+      ticketStore.setLoadTicket().then(() => {
+        clearTicketForm();
+      });
+    } else {
+      errors.value = res.error || {};
+      console.error('Form submission error:', res.error);
+    }
+  }).catch(error => {
+    console.error('Submission failed:', error);
+  });
+};
+
+onMounted(() => {
+  ticketStore.setLoadTicket();
+  systemStore.setLoadSystem().then((res) => console.log('Systems loaded:', res));
+  developerStore.setLoadDeveloper().then((res) => console.log('Developers loaded:', res));
+});
+</script>
+
 <template>
   <div class="p-6 h-full">
     <div class="flex justify-between">
@@ -163,129 +284,10 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useTicketStore } from '@/modules/ticket.js';  
-import { useSystemStore } from '@/modules/system.js';  
-import { useDeveloperStore } from '@/modules/developer.js'; 
-
-// Data
-const ticketStore = useTicketStore();
-const systemStore = useSystemStore();
-const developerStore = useDeveloperStore();  
-
-const ticketForm = ref({
-  id: null,
-  ticket_no: '',
-  full_name: '',
-  email: '',
-  type_of_ticket: '', 
-  impact: '',
-  status: '',  
-  system_name_id: null,
-  assigned_to_id: null,  
-  description: '',
-  image: null, // Add this field for the image file
-});
-
-const imagePreviews = ref([]);  // To store image previews
-const errors = ref({});
-
-const ticketTypes = ref([
-  { id: 1, name: 'Bug' },
-  { id: 2, name: 'Feature Request' },
-  { id: 3, name: 'Inquiry' },
-]);
-
-const ticketStatuses = ref([
-  { id: 1, name: 'Active' },
-  { id: 2, name: 'On-going' },
-  { id: 3, name: 'Closed' },
-]);
-
-const clearTicketForm = () => {
-  ticketForm.value = {
-    id: null,
-    ticket_no: '',
-    full_name: '',
-    email: '',
-    type_of_ticket: '',
-    impact: '',
-    status: '',
-    system_name_id: null,
-    system_name: '',
-    assigned_to_id: null,
-    description: '',
-    image: null, // Clear the image file
-  };
-  imagePreviews.value = [];  // Clear the image previews
-  errors.value = {};
-};
-
-const handleImageUpload = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    // Store the file
-    ticketForm.value.image = file;
-
-    // Create a preview URL
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      imagePreviews.value = [{ url: e.target.result, name: file.name }];
-    };
-    reader.readAsDataURL(file);
-  }
-};
-
-const submitTicketForm = () => {
-  const selectedSystem = systemStore.getLoadSystem.find(system => system.id === ticketForm.value.system_name_id);
-  const assignedDeveloper = developerStore.getLoadDeveloper.find(developer => developer.id === ticketForm.value.assigned_to_id);
-  
-  const formData = new FormData();
-  formData.append('ticket_no', ticketForm.value.ticket_no);
-  formData.append('full_name', ticketForm.value.full_name);
-  formData.append('email', ticketForm.value.email);
-  formData.append('type_of_ticket', ticketForm.value.type_of_ticket);
-  formData.append('impact', ticketForm.value.impact);
-  formData.append('status', ticketForm.value.status);
-  formData.append('description', ticketForm.value.description);
-  formData.append('system_name_id', ticketForm.value.system_name_id);
-  formData.append('assigned_to_id', ticketForm.value.assigned_to_id);
-  if (ticketForm.value.image) {
-    formData.append('image', ticketForm.value.image);
-  }
-
-  const payload = {
-    system_name: selectedSystem ? selectedSystem.system_name : '',
-    assigned_to_email: assignedDeveloper ? assignedDeveloper.email : '',
-  };
-
-  console.log('Submitting form with payload:', payload);  
-
-  ticketStore.setStoreTicket(formData, payload).then((res) => {
-    if (res.status === 'success') {
-      ticketStore.setLoadTicket().then(() => {
-        clearTicketForm();
-      });
-    } else {
-      errors.value = res.error || {};
-      console.error('Form submission error:', res.error);
-    }
-  }).catch(error => {
-    console.error('Submission failed:', error);
-  });
-};
-
-onMounted(() => {
-  ticketStore.setLoadTicket();
-  systemStore.setLoadSystem().then((res) => console.log('Systems loaded:', res));
-  developerStore.setLoadDeveloper().then((res) => console.log('Developers loaded:', res));
-});
-</script>
-
 <style scoped>
 /* Ensure the form content is scrollable */
 .bg-white.border.shadow-lg.rounded-lg.p-6.overflow-auto.h-full {
   max-height: calc(100vh - 6rem); /* Adjust the height based on your needs */
 }
 </style>
+
