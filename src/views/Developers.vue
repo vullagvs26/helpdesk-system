@@ -39,6 +39,7 @@ const developers = ref([
 ]);
 
 const showModal = ref(false);
+const activeDropdown = ref(null);
 
 const addNewDeveloper = (developer) => {
   developers.value.push({
@@ -54,6 +55,19 @@ const openModal = () => {
 const closeModal = () => {
   showModal.value = false;
 };
+
+const toggleDropdown = (id) => {
+  activeDropdown.value = activeDropdown.value === id ? null : id;
+};
+
+const editDeveloper = (developer) => {
+  // Implement edit functionality here
+  console.log('Edit', developer);
+};
+
+const deleteDeveloper = (id) => {
+  developers.value = developers.value.filter(developer => developer.id !== id);
+};
 </script>
 
 <template>
@@ -66,7 +80,13 @@ const closeModal = () => {
         class="relative bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow"
       >
         <div class="absolute top-4 right-4 text-gray-400 cursor-pointer">
-          <font-awesome-icon icon="ellipsis-vertical" />
+          <font-awesome-icon icon="ellipsis-vertical" @click="toggleDropdown(developer.id)" />
+          <div v-if="activeDropdown === developer.id" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+            <ul class="text-center">
+              <li @click="editDeveloper(developer)" class="px-4 py-2 hover:bg-blue-100 hover:text-blue-600 cursor-pointer">Edit</li>
+              <li @click="deleteDeveloper(developer.id)" class="px-4 py-2 hover:bg-red-100 hover:text-red-600 cursor-pointer">Delete</li>
+            </ul>
+          </div>
         </div>
         <img :src="developer.image" alt="Developer Image" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-blue-500" />
         <h3 class="font-semibold text-xl mb-2">{{ developer.name }}</h3>
