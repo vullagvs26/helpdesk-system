@@ -80,6 +80,14 @@
 
     <!-- Add System Modal -->
     <AddSystemModal :show="showModal" @onClose="closeModal" @onSave="addNewSystem" />
+
+    <!-- Edit System Modal -->
+    <EditSystemModal
+      :show="showEditModal"
+      :system="selectedSystem"
+      @onClose="closeEditModal"
+      @onUpdate="updateSystem"
+    />
   </div>
 </template>
 
@@ -89,6 +97,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faPlus, faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import AddSystemModal from "@/components/AddSystemModal.vue";
+import EditSystemModal from "@/components/EditSystemModal.vue";
 import { useSystemStore } from "@/modules/system.js";
 
 library.add(faPlus, faEdit, faTrashAlt);
@@ -96,6 +105,34 @@ library.add(faPlus, faEdit, faTrashAlt);
 const systemStore = useSystemStore();
 const showModal = ref(false);
 const systems = ref(null);
+const showEditModal = ref(false);
+const selectedSystem = ref(null);
+
+// Method to open edit modal
+const editSystem = (system) => {
+  selectedSystem.value = { ...system };
+  showEditModal.value = true;
+};
+
+// Method to close edit modal
+const closeEditModal = () => {
+  showEditModal.value = false;
+  selectedSystem.value = null; // Reset selectedSystem after modal closes
+};
+
+// Method to update system after edit
+const updateSystem = (updatedSystem) => {
+  // Call your store action to update the system
+  systemStore
+    .setUpdateSystem(updatedSystem)
+    .then(() => {
+      closeEditModal();
+      fetchSystems();
+    })
+    .catch((error) => {
+      console.error("Failed to update system:", error);
+    });
+};
 
 //open and close model
 const openModal = () => {
@@ -118,9 +155,6 @@ const addNewSystem = (payload) => {
     });
 };
 
-const editSystem = (system) => {
-  // edit functionality
-};
 const deleteSystem = (systemId) => {
   systemStore
     .setDeleteSystem(systemId)
