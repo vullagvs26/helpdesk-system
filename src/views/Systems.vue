@@ -12,36 +12,32 @@
       </button>
     </div>
 
+    <!-- Scrollable table container -->
     <div class="overflow-x-auto bg-white rounded-lg shadow-md">
       <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+        <thead class="bg-gray-50 sticky top-0 z-10">
           <tr>
             <th
-              scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               System Name
             </th>
             <th
-              scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               Published At
             </th>
             <th
-              scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               Short Description
             </th>
             <th
-              scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               Status
             </th>
             <th
-              scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               Action
@@ -49,16 +45,10 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="(system, i) in systemStore.getLoadSystem" :key="i">
-            <td class="px-6 py-4 whitespace-nowrap">
-              {{ system.system_name }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              {{ system.published_at }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              {{ system.description }}
-            </td>
+          <tr v-for="(system, index) in systems" :key="index">
+            <td class="px-6 py-4 whitespace-nowrap">{{ system.system_name }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ system.published_at }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ system.description }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span
                 :class="{
@@ -69,15 +59,15 @@
                 {{ system.status }}
               </span>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap flex items-center">
+            <td class="px-6 py-4 whitespace-nowrap flex items-center space-x-2">
               <button
                 @click="editSystem(system)"
-                class="text-blue-600 hover:text-blue-900 mr-4"
+                class="text-blue-600 hover:text-blue-900"
               >
                 <font-awesome-icon icon="edit" />
               </button>
               <button
-                @click="deleteSystem(system)"
+                @click="deleteSystem(system.id)"
                 class="text-red-600 hover:text-red-900"
               >
                 <font-awesome-icon icon="trash-alt" />
@@ -88,6 +78,7 @@
       </table>
     </div>
 
+    <!-- Add System Modal -->
     <AddSystemModal :show="showModal" @onClose="closeModal" @onSave="addNewSystem" />
   </div>
 </template>
@@ -103,11 +94,10 @@ import { useSystemStore } from "@/modules/system.js";
 library.add(faPlus, faEdit, faTrashAlt);
 
 const systemStore = useSystemStore();
-const system = ref(null);
-
-//modal
 const showModal = ref(false);
+const systems = ref(null);
 
+//open and close model
 const openModal = () => {
   showModal.value = true;
 };
@@ -121,20 +111,45 @@ const addNewSystem = (payload) => {
     .setStoreSystem(payload)
     .then(() => {
       closeModal();
-      window.location.reload();
+      fetchSystems(); // Refresh systems after adding a new one
     })
     .catch((error) => {
       console.error("Failed to add new system:", error);
     });
 };
 
-onMounted(() => {
+const editSystem = (system) => {
+  // Implement edit functionality if needed
+};
+const deleteSystem = (systemId) => {
+  systemStore
+    .setDeleteSystem(systemId)
+    .then(() => {
+      fetchSystems(); // Refresh systems after deleting
+    })
+    .catch((error) => {
+      console.error(`Failed to delete system with ID ${systemId}:`, error);
+    });
+};
+
+const fetchSystems = () => {
   systemStore.setLoadSystem().then(() => {
-    if (systemStore.getLoadSystem.length > 0) {
-      system.value = systemStore.getLoadSystem[0];
-    }
+    systems.value = systemStore.getLoadSystem;
   });
-});
+};
+
+onMounted(fetchSystems);
 </script>
 
-<style scoped></style>
+<style scoped>
+.overflow-x-auto {
+  max-height: calc(100vh - 200px);
+  overflow-x: auto;
+}
+
+.bg-gray-50 {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+</style>
