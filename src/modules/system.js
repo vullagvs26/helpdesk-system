@@ -35,6 +35,17 @@ export const useSystemStore = defineStore({
             });
         },
 
+        setUpdateSystem(payload) {
+            return new Promise((resolve, reject)=> {
+                axios.put(`systems/${payload.id}`, payload).then((response)=> {
+                    
+                    resolve(response.data)
+                }) .catch(err => {
+                    reject (err)
+                })
+            })
+        },
+
         // Action to delete a system by ID
         setDeleteSystem(systemId) {
             return new Promise((resolve, reject) => {
@@ -48,6 +59,17 @@ export const useSystemStore = defineStore({
             });
         }
     },
+
+    setUpdateEmployee(payload) {
+            return new Promise((resolve, reject)=> {
+                axios.put(`employees/${payload.id}`, payload).then((response)=> {
+                    
+                    resolve(response.data)
+                }) .catch(err => {
+                    reject (err)
+                })
+            })
+        },
 
     getters: {
         // Getter to retrieve loaded systems

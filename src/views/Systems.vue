@@ -111,7 +111,7 @@ const addNewSystem = (payload) => {
     .setStoreSystem(payload)
     .then(() => {
       closeModal();
-      fetchSystems(); // Refresh systems after adding a new one
+      fetchSystems();
     })
     .catch((error) => {
       console.error("Failed to add new system:", error);
@@ -119,13 +119,13 @@ const addNewSystem = (payload) => {
 };
 
 const editSystem = (system) => {
-  // Implement edit functionality if needed
+  // edit functionality
 };
 const deleteSystem = (systemId) => {
   systemStore
     .setDeleteSystem(systemId)
     .then(() => {
-      fetchSystems(); // Refresh systems after deleting
+      fetchSystems();
     })
     .catch((error) => {
       console.error(`Failed to delete system with ID ${systemId}:`, error);
