@@ -17,6 +17,9 @@
               System Name
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Published At
+            </th>
+             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Short Description
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -28,9 +31,12 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="system in systems" :key="system.id">
+          <tr v-for="(system, i) in systemStore.getLoadSystem" :key="i">
             <td class="px-6 py-4 whitespace-nowrap">
-              {{ system.name }}
+              {{ system.system_name }}
+            </td>
+             <td class="px-6 py-4 whitespace-nowrap">
+              {{ system.published_at }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               {{ system.description }}
@@ -58,23 +64,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPlus, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import AddSystemModal from '@/components/AddSystemModal.vue';
+import { useSystemStore } from "@/modules/system.js";
 
 library.add(faPlus, faEdit, faTrashAlt);
 
-const systems = ref([
-  {
-    id: 1,
-    name: 'System Name',
-    description: 'Lorem Ipsum',
-    status: 'Active',
-  },
-  // Add more systems as needed
-]);
+const systemStore = useSystemStore();
+const system = ref(null); 
 
 const showModal = ref(false);
 
@@ -86,25 +86,16 @@ const closeModal = () => {
   showModal.value = false;
 };
 
-const addNewSystem = (system) => {
-  systems.value.push({ ...system, id: systems.value.length + 1 });
-  closeModal();
-};
-
-const editSystem = (system) => {
-  // Logic to edit system
-};
-
-const deleteSystem = (system) => {
-  systems.value = systems.value.filter((s) => s.id !== system.id);
-};
+onMounted(() => {
+  systemStore.setLoadSystem().then(() => {
+    //display the first system in the list initially
+    if (systemStore.getLoadSystem.length > 0) {
+      system.value = systemStore.getLoadSystem[0];
+    }
+  });
+});
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
-}
+/* Add your scoped styles here */
 </style>

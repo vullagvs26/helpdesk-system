@@ -23,6 +23,12 @@
                     <input v-model="form.systemName" id="systemName" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
                   </div>
                   <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="publishedAt">
+                      Published At
+                    </label>
+                    <vue-datepicker v-model="form.publishedAt" id="publishedAt" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                  </div>
+                  <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="description">
                       Short Description
                     </label>
@@ -56,7 +62,8 @@
 </template>
 
 <script setup>
-import { ref, toRefs, watch } from 'vue';
+import { ref } from 'vue';
+import VueDatepicker from 'vue3-datepicker';
 
 const props = defineProps({
   show: Boolean,
@@ -66,6 +73,7 @@ const emit = defineEmits(['onClose', 'onSave']);
 
 const form = ref({
   systemName: '',
+  publishedAt: null,
   description: '',
   status: 'Active',
 });
@@ -81,13 +89,10 @@ const close = () => {
 
 const resetForm = () => {
   form.value.systemName = '';
+  form.value.publishedAt = null;
   form.value.description = '';
   form.value.status = 'Active';
 };
-
-watch(() => props.show, (newVal) => {
-  if (!newVal) resetForm();
-});
 </script>
 
 <style scoped>
