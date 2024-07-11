@@ -118,6 +118,7 @@
 <script setup>
 import { ref, watch, defineProps, defineEmits } from "vue";
 import VueDatepicker from "vue3-datepicker";
+import { formatDate } from "@/utils/dateUtils";
 
 const props = defineProps({
   show: Boolean,
@@ -149,9 +150,24 @@ watch(
   }
 );
 
-const updateSystem = () => {
-  emit("onUpdate", { ...form.value });
-  resetForm();
+const handleUpdateSystem = (updatedSystem) => {
+    systemStore.setUpdateSystem(updatedSystem)
+        .then(() => {
+            // Successfully updated
+            closeEditDialog();
+        })
+        .catch(err => {
+            console.error("Error updating system:", err);
+        });
+};
+
+
+const updateSystem = () => { 
+    // Format the date to YYYY-MM-DD before saving
+  const formattedDate = formatDate(form.value.published_at); // Use your date formatting function here
+  form.value.published_at = formattedDate;
+  emit("onUpdate", { ...form.value, id: props.system.id });
+  resetForm(); 
 };
 
 const close = () => {

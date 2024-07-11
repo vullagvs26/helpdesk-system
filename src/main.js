@@ -24,4 +24,4 @@ app.mount("#app");
 app.component("font-awesome-icon", FontAwesomeIcon);
 
 
-axios.defaults.baseURL = 'http://10.164.58.18/my-projects/helpdesk-system-be/public/api'
+axios.defaults.baseURL = 'http://localhost/Projects/helpdesk-system-be/public/api'

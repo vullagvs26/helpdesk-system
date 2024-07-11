@@ -36,14 +36,20 @@ export const useSystemStore = defineStore({
         },
 
         setUpdateSystem(payload) {
-            return new Promise((resolve, reject)=> {
-                axios.put(`systems/${payload.id}`, payload).then((response)=> {
-                    
-                    resolve(response.data)
-                }) .catch(err => {
-                    reject (err)
-                })
-            })
+            return new Promise((resolve, reject) => {
+                axios.put(`systems/${payload.id}`, payload)
+                    .then(response => {
+                        // Update local state if necessary
+                        const index = this.items.findIndex(item => item.id === payload.id);
+                        if (index !== -1) {
+                            this.items[index] = response.data;
+                        }
+                        resolve(response.data);
+                    })
+                    .catch(err => {
+                        reject(err);
+                    });
+            });
         },
 
         // Action to delete a system by ID
