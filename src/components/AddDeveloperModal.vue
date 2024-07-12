@@ -10,7 +10,7 @@
             <div class="relative w-24 h-24 mx-auto mb-4">
               <img
                 class="w-full h-full rounded-full border-4 border-blue-500"
-                :src="developer.image"
+                :src="developer.profile_photo"
                 alt=""
               />
               <label
@@ -43,7 +43,7 @@
               <input
                 type="text"
                 id="first-name"
-                v-model="developer.firstName"
+                v-model="developer.first_name"
                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
               />
             </div>
@@ -52,7 +52,16 @@
               <input
                 type="text"
                 id="last-name"
-                v-model="developer.lastName"
+                v-model="developer.last_name"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div>
+              <label for="status" class="block text-gray-700">Last Name</label>
+              <input
+                type="text"
+                id="status"
+                v-model="developer.status"
                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
               />
             </div>
@@ -75,10 +84,10 @@
               />
             </div>
             <div class="col-span-2">
-              <label for="about" class="block text-gray-700">About you</label>
+              <label for="description" class="block text-gray-700">About you</label>
               <textarea
-                id="about"
-                v-model="developer.about"
+                id="description"
+                v-model="developer.description"
                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
               ></textarea>
             </div>
@@ -105,30 +114,27 @@
 
 <script setup>
 import { ref } from "vue";
-import placeholderImage from "@/assets/image/profile.png";
 
 const props = defineProps({
   show: {
     type: Boolean,
-    required: true,
   },
   onClose: {
     type: Function,
-    required: true,
   },
   onSave: {
     type: Function,
-    required: true,
   },
 });
 
 const developer = ref({
   first_name: "",
   last_name: "",
+  status: "",
   position: "",
   email: "",
-  about: "",
-  image: null,
+  description: "",
+  profile_photo: null,
 });
 
 const close = () => {
@@ -145,7 +151,7 @@ const uploadPhoto = (event) => {
   if (file) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      developer.value.image = e.target.result;
+      developer.value.profile_photo = e.target.result;
     };
     reader.readAsDataURL(file);
   }

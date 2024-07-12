@@ -17,11 +17,16 @@ const tickets = ref([]);
 const showModal = ref(false);
 const activeDropdown = ref(null);
 
-const addNewDeveloper = (developer) => {
-  developers.value.push({
-    ...developer,
-    id: developers.value.length + 1,
-  });
+const addNewDeveloper = (payload) => {
+  developerStore
+    .setStoreDeveloper(payload)
+    .then(() => {
+      closeModal();
+      fetchDevelopers();
+    })
+    .catch((error) => {
+      console.error("Failed to add new developer:", error);
+    });
 };
 
 const openModal = () => {
@@ -126,8 +131,8 @@ onMounted(fetchDevelopers);
 
     <AddDeveloperModal
       :show="showModal"
-      @onClose="closeModal"
-      @onSave="addNewDeveloper"
+      :onClose="closeModal"
+      :onSave="addNewDeveloper"
     />
   </div>
 </template>
