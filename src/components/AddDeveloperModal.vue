@@ -1,16 +1,69 @@
+<script setup>
+import { ref } from 'vue';
+
+const props = defineProps({
+  show: {
+    type: Boolean,
+  },
+  onClose: {
+    type: Function,
+  },
+  onSave: {
+    type: Function,
+  },
+});
+
+const developer = ref({
+  first_name: '',
+  last_name: '',
+  status: '',
+  position: '',
+  email: '',
+  description: '',
+  profile_photo: null,
+  profile_photo_url: null,
+});
+
+const close = () => {
+  props.onClose();
+};
+
+const save = () => {
+  const formData = new FormData();
+  formData.append('first_name', developer.value.first_name);
+  formData.append('last_name', developer.value.last_name);
+  formData.append('status', developer.value.status);
+  formData.append('position', developer.value.position);
+  formData.append('email', developer.value.email);
+  formData.append('description', developer.value.description);
+  if (developer.value.profile_photo) {
+    formData.append('profile_photo', developer.value.profile_photo);
+  }
+  props.onSave(formData);
+  close();
+};
+
+const uploadPhoto = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    developer.value.profile_photo = file;
+    // Convert file to URL and set it to profile_photo_url
+    developer.value.profile_photo_url = URL.createObjectURL(file);
+  }
+};
+</script>
+
 <template>
   <transition name="fade">
-    <div
-      v-if="show"
-      class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50"
-    >
+    <div v-if="show" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-2xl">
         <div class="p-6">
           <div class="text-center mb-6">
             <div class="relative w-24 h-24 mx-auto mb-4">
               <img
+                v-if="developer.profile_photo"
+                :src="developer.profile_photo_url"
                 class="w-full h-full rounded-full border-4 border-blue-500"
-                :src="developer.profile_photo"
                 alt=""
               />
               <label
@@ -23,17 +76,10 @@
                   class="hidden"
                   @change="uploadPhoto"
                 />
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    d="M16.7 7.29l-4-4A1 1 0 0 0 12 3H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8a1 1 0 0 0-.3-.71zM11 5.41L14.59 9H11V5.41zM6 15V5h4v4a1 1 0 0 0 1 1h4v5H6z"
-                  ></path>
-                </svg>
+                
               </label>
             </div>
-            <button
-              class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors"
-              @click="uploadPhoto"
-            >
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors">
               Upload Photo
             </button>
           </div>
@@ -57,7 +103,7 @@
               />
             </div>
             <div>
-              <label for="status" class="block text-gray-700">Last Name</label>
+              <label for="status" class="block text-gray-700">Status</label>
               <input
                 type="text"
                 id="status"
@@ -111,60 +157,3 @@
     </div>
   </transition>
 </template>
-
-<script setup>
-import { ref } from "vue";
-
-const props = defineProps({
-  show: {
-    type: Boolean,
-  },
-  onClose: {
-    type: Function,
-  },
-  onSave: {
-    type: Function,
-  },
-});
-
-const developer = ref({
-  first_name: "",
-  last_name: "",
-  status: "",
-  position: "",
-  email: "",
-  description: "",
-  profile_photo: null,
-});
-
-const close = () => {
-  props.onClose();
-};
-
-const save = () => {
-  props.onSave(developer.value);
-  close();
-};
-
-const uploadPhoto = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      developer.value.profile_photo = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-};
-</script>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>

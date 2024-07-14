@@ -1,55 +1,3 @@
-<script setup>
-import { ref, onMounted } from "vue";
-import AddDeveloperModal from "@/components/AddDeveloperModal.vue";
-import profileImage from "@/assets/image/profile.png";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
-import { useDeveloperStore } from "@/modules/developer.js";
-import { useTicketStore } from "@/modules/ticket.js";
-library.add(faEllipsisVertical);
-
-const developerStore = useDeveloperStore();
-const ticketStore = useTicketStore();
-const developers = ref(null);
-const tickets = ref([]);
-
-const showModal = ref(false);
-const activeDropdown = ref(null);
-
-const addNewDeveloper = (payload) => {
-  developerStore
-    .setStoreDeveloper(payload)
-    .then(() => {
-      closeModal();
-      fetchDevelopers();
-    })
-    .catch((error) => {
-      console.error("Failed to add new developer:", error);
-    });
-};
-
-const openModal = () => {
-  showModal.value = true;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-};
-
-const toggleDropdown = (id) => {
-  activeDropdown.value = activeDropdown.value === id ? null : id;
-};
-
-const fetchDevelopers = () => {
-  developerStore.setLoadDeveloper().then(() => {
-    developers.value = developerStore.getLoadDeveloper;
-  });
-};
-
-onMounted(fetchDevelopers);
-</script>
-
 <template>
   <div class="p-8 bg-gray-100 min-h-screen">
     <h2 class="text-3xl font-bold mb-8 text-blue-600">Developers Overview</h2>
@@ -85,7 +33,7 @@ onMounted(fetchDevelopers);
           </div>
         </div>
         <img
-          src="@/assets/image/profile.png"
+          :src="developer.profile_photo"
           alt="Developer Image"
           class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-blue-500"
         />
@@ -136,6 +84,59 @@ onMounted(fetchDevelopers);
     />
   </div>
 </template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+import AddDeveloperModal from "@/components/AddDeveloperModal.vue";
+
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
+import { useDeveloperStore } from "@/modules/developer.js";
+import { useTicketStore } from "@/modules/ticket.js";
+
+library.add(faEllipsisVertical);
+
+const developerStore = useDeveloperStore();
+const ticketStore = useTicketStore();
+const developers = ref(null);
+const tickets = ref([]);
+
+const showModal = ref(false);
+const activeDropdown = ref(null);
+
+const addNewDeveloper = (payload) => {
+  developerStore
+    .setStoreDeveloper(payload)
+    .then(() => {
+      closeModal();
+      fetchDevelopers();
+    })
+    .catch((error) => {
+      console.error("Failed to add new developer:", error);
+    });
+};
+
+const openModal = () => {
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
+
+const toggleDropdown = (id) => {
+  activeDropdown.value = activeDropdown.value === id ? null : id;
+};
+
+const fetchDevelopers = () => {
+  developerStore.setLoadDeveloper().then(() => {
+    developers.value = developerStore.getLoadDeveloper;
+  });
+};
+
+onMounted(fetchDevelopers);
+</script>
 
 <style scoped>
 .fade-enter-active,
