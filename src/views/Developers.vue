@@ -117,6 +117,17 @@ const addNewDeveloper = (payload) => {
     });
 };
 
+const deleteDeveloper = (developerId) => {
+  developerStore
+    .setDeleteDeveloper(developerId)
+    .then(() => {
+      fetchDevelopers();
+    })
+    .catch((error) => {
+      console.error(`Failed to delete developer with ID ${developerId}:`, error);
+    });
+};
+
 const openModal = () => {
   showModal.value = true;
 };
