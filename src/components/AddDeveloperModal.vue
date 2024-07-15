@@ -1,61 +1,9 @@
-<script setup>
-import { ref } from 'vue';
-
-const props = defineProps({
-  show: {
-    type: Boolean,
-  },
-  onClose: {
-    type: Function,
-  },
-  onSave: {
-    type: Function,
-  },
-});
-
-const developer = ref({
-  first_name: '',
-  last_name: '',
-  status: '',
-  position: '',
-  email: '',
-  description: '',
-  profile_photo: null,
-  profile_photo_url: null,
-});
-
-const close = () => {
-  props.onClose();
-};
-
-const save = () => {
-  const formData = new FormData();
-  formData.append('first_name', developer.value.first_name);
-  formData.append('last_name', developer.value.last_name);
-  formData.append('status', developer.value.status);
-  formData.append('position', developer.value.position);
-  formData.append('email', developer.value.email);
-  formData.append('description', developer.value.description);
-  if (developer.value.profile_photo) {
-    formData.append('profile_photo', developer.value.profile_photo);
-  }
-  props.onSave(formData);
-  close();
-};
-
-const uploadPhoto = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    developer.value.profile_photo = file;
-    // Convert file to URL and set it to profile_photo_url
-    developer.value.profile_photo_url = URL.createObjectURL(file);
-  }
-};
-</script>
-
 <template>
   <transition name="fade">
-    <div v-if="show" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+    <div
+      v-if="show"
+      class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50"
+    >
       <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-2xl">
         <div class="p-6">
           <div class="text-center mb-6">
@@ -76,10 +24,11 @@ const uploadPhoto = (event) => {
                   class="hidden"
                   @change="uploadPhoto"
                 />
-                
               </label>
             </div>
-            <button class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors">
+            <button
+              class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors"
+            >
               Upload Photo
             </button>
           </div>
@@ -140,13 +89,13 @@ const uploadPhoto = (event) => {
           </div>
           <div class="flex justify-end">
             <button
-              @click="close"
+              @click="closeAndReset"
               class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full mr-2 hover:bg-gray-300 transition-colors"
             >
               Cancel
             </button>
             <button
-              @click="save"
+              @click="saveAndReset"
               class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors"
             >
               Save
@@ -157,3 +106,97 @@ const uploadPhoto = (event) => {
     </div>
   </transition>
 </template>
+
+<script setup>
+import { ref } from "vue";
+
+const props = defineProps({
+  show: {
+    type: Boolean,
+    required: true,
+  },
+  onClose: {
+    type: Function,
+    required: true,
+  },
+  onSave: {
+    type: Function,
+    required: true,
+  },
+  developerData: {
+    type: Object,
+    default: null,
+  },
+});
+
+const developer = ref({
+  first_name: "",
+  last_name: "",
+  status: "",
+  position: "",
+  email: "",
+  description: "",
+  profile_photo: null,
+  profile_photo_url: null,
+});
+
+const closeAndReset = () => {
+  close();
+  resetDeveloper();
+};
+
+const saveAndReset = () => {
+  save();
+  resetDeveloper();
+};
+
+const resetDeveloper = () => {
+  developer.value = {
+    first_name: "",
+    last_name: "",
+    status: "",
+    position: "",
+    email: "",
+    description: "",
+    profile_photo: null,
+    profile_photo_url: null,
+  };
+
+  // Reset file input (if needed)
+  const fileInput = document.getElementById("upload-photo");
+  if (fileInput) {
+    fileInput.value = "";
+  }
+};
+
+const close = () => {
+  props.onClose();
+};
+
+const save = () => {
+  const formData = new FormData();
+  formData.append("first_name", developer.value.first_name);
+  formData.append("last_name", developer.value.last_name);
+  formData.append("status", developer.value.status);
+  formData.append("position", developer.value.position);
+  formData.append("email", developer.value.email);
+  formData.append("description", developer.value.description);
+  if (developer.value.profile_photo) {
+    formData.append("profile_photo", developer.value.profile_photo);
+  }
+  props.onSave(formData);
+  close();
+};
+
+const uploadPhoto = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    developer.value.profile_photo = file;
+    developer.value.profile_photo_url = URL.createObjectURL(file);
+  }
+};
+</script>
+
+<style scoped>
+/* Add your scoped styles here */
+</style>
