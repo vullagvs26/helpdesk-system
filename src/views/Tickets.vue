@@ -3,22 +3,15 @@ import { ref, computed, onMounted } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faTrashAlt, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
-
-// Importing images
-import profileImage from "@/assets/image/profile.png";
-import ticketImage from "@/assets/image/fujitsu-logo.png";
 import { useDeveloperStore } from "@/modules/developer.js";
 import { useTicketStore } from "@/modules/ticket.js";
-import { useSystemStore } from "@/modules/system.js";
 
 library.add(faTrashAlt, faSearch, faTimes);
 
 const developerStore = useDeveloperStore();
 const ticketStore = useTicketStore();
-const systemStore = useSystemStore();
 const developers = ref(null);
 const tickets = ref([]);
-const systems = ref(null);
 const searchQuery = ref("");
 const isTicketOpen = ref(false);
 const selectedTicket = ref(null);
@@ -45,6 +38,14 @@ const openTicket = (ticket) => {
 
 const closeTicket = () => {
   isTicketOpen.value = false;
+};
+
+const deleteTicket = (ticketId) => {
+  ticketStore.setDeleteTicket(ticketId).then(() => {
+    fetchDevelopersAndTickets();
+  }).catch(err => {
+    console.error("Failed to delete ticket:", err);
+  });
 };
 
 onMounted(fetchDevelopersAndTickets);
@@ -111,8 +112,8 @@ onMounted(fetchDevelopersAndTickets);
             <button class="text-blue-500 mt-2" @click="openTicket(ticket)">Open</button>
           </div>
         </div>
-        <button class="text-gray-500">
-          <font-awesome-icon icon="trash-alt" />
+        <button class="text-gray-500 hover:text-red-500" @click="deleteTicket(ticket.id)">
+          <font-awesome-icon icon="trash-alt" class="hover:text-red-500" />
           Cancel
         </button>
       </div>
@@ -146,4 +147,5 @@ onMounted(fetchDevelopersAndTickets);
 .slide-leave-to {
   transform: translateX(100%);
 }
+
 </style>
