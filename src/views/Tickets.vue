@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faTrashAlt, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 // Importing images
 import profileImage from "@/assets/image/profile.png";
@@ -11,7 +11,7 @@ import { useDeveloperStore } from "@/modules/developer.js";
 import { useTicketStore } from "@/modules/ticket.js";
 import { useSystemStore } from "@/modules/system.js";
 
-library.add(faTrashAlt, faSearch);
+library.add(faTrashAlt, faSearch, faTimes);
 
 const developerStore = useDeveloperStore();
 const ticketStore = useTicketStore();
@@ -19,9 +19,9 @@ const systemStore = useSystemStore();
 const developers = ref(null);
 const tickets = ref([]);
 const systems = ref(null);
-
-//filter
 const searchQuery = ref("");
+const isTicketOpen = ref(false);
+const selectedTicket = ref(null);
 
 const ticketsSearch = computed(() => {
   return tickets.value.filter((ticket) =>
@@ -38,11 +38,20 @@ const fetchDevelopersAndTickets = () => {
   });
 };
 
+const openTicket = (ticket) => {
+  selectedTicket.value = ticket;
+  isTicketOpen.value = true;
+};
+
+const closeTicket = () => {
+  isTicketOpen.value = false;
+};
+
 onMounted(fetchDevelopersAndTickets);
 </script>
 
 <template>
-  <div class="p-6">
+  <div class="p-6 relative">
     <h2 class="text-2xl font-semibold mb-4 text-blue-500">Tickets</h2>
 
     <div class="mb-6">
@@ -99,7 +108,7 @@ onMounted(fetchDevelopersAndTickets);
               {{ ticket.full_name }}
             </h4>
             <p class="text-gray-600">{{ ticket.description }}</p>
-            <button class="text-blue-500 mt-2">Open</button>
+            <button class="text-blue-500 mt-2" @click="openTicket(ticket)">Open</button>
           </div>
         </div>
         <button class="text-gray-500">
@@ -108,9 +117,33 @@ onMounted(fetchDevelopersAndTickets);
         </button>
       </div>
     </div>
+
+    <transition name="slide">
+      <div
+        v-if="isTicketOpen"
+        class="fixed right-0 top-0 bottom-0 w-1/2 bg-white shadow-lg p-4 overflow-y-auto"
+      >
+        <button @click="closeTicket" class="absolute top-4 right-4 text-gray-500">
+          <font-awesome-icon icon="times" />
+        </button>
+        <h3 class="text-xl font-semibold mb-4">{{ selectedTicket.full_name }}</h3>
+        <img :src="selectedTicket.image" alt="Ticket Image" class="w-24 h-24 mb-4" />
+        <p class="mb-4"><strong>Impact:</strong> {{ selectedTicket.impact }}</p>
+        <p>{{ selectedTicket.description }}</p>
+        <!-- Add more ticket details here if necessary -->
+      </div>
+    </transition>
   </div>
 </template>
 
 <style scoped>
-/* Add any additional styling here */
+.slide-enter-active, .slide-leave-active {
+  transition: transform 0.3s ease;
+}
+.slide-enter-from {
+  transform: translateX(100%);
+}
+.slide-leave-to {
+  transform: translateX(100%);
+}
 </style>
