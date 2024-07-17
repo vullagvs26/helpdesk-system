@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <div class="mb-6 flex items-center justify-between">
+    <div class="mb-6 flex items-center justify-between max-h-96 overflow-y-auto">
       <div class="flex items-center">
         <h3 class="text-xl font-medium mr-4">Ticket List</h3>
         <div class="relative">
@@ -52,7 +52,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="max-h-96 overflow-y-auto">
       <div
         v-for="ticket in filteredTickets"
         :key="ticket.id"
@@ -61,10 +61,13 @@
         <div class="flex items-center">
           <img :src="ticket.image" alt="Ticket Image" class="w-12 h-12 mr-4" />
           <div>
-            <h4 class="font-semibold">
-              {{ ticket.ticket_no }} | {{ ticket.system.system_name }} |
-              {{ ticket.full_name }}
-            </h4>
+            <div class="flex">
+              <h4 class="font-semibold">{{ ticket.ticket_no }} |</h4>
+              <p :class="getStatusColor(ticket.status)" class="ml-2 font-semibold">
+                {{ ticket.status }}
+              </p>
+            </div>
+
             <p class="text-gray-600">{{ ticket.description }}</p>
             <button class="text-blue-500 mt-2" @click="openTicket(ticket)">Open</button>
           </div>
@@ -201,6 +204,19 @@ const difficultyOptions = [
   { value: "medium", label: "Medium", description: "4hrs to 16hrs" },
   { value: "hard", label: "Hard", description: "16hrs above" },
 ];
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case "Active":
+      return "text-red-500";
+    case "On-going":
+      return "text-orange-500";
+    case "Closed":
+      return "text-green-500";
+    default:
+      return "";
+  }
+};
 
 const statusClass = computed(() => {
   if (!selectedTicket.value) return "";
