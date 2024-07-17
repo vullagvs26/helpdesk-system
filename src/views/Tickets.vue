@@ -1,3 +1,59 @@
+<<<<<<< HEAD
+=======
+<script setup>
+import { ref, computed, onMounted } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faTrashAlt, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useDeveloperStore } from "@/modules/developer.js";
+import { useTicketStore } from "@/modules/ticket.js";
+
+library.add(faTrashAlt, faSearch, faTimes);
+
+const developerStore = useDeveloperStore();
+const ticketStore = useTicketStore();
+const developers = ref(null);
+const tickets = ref([]);
+const searchQuery = ref("");
+const isTicketOpen = ref(false);
+const selectedTicket = ref(null);
+
+const ticketsSearch = computed(() => {
+  return tickets.value.filter((ticket) =>
+    ticket.ticket_no.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
+
+const fetchDevelopersAndTickets = () => {
+  developerStore.setLoadDeveloper().then(() => {
+    developers.value = developerStore.getLoadDeveloper;
+  });
+  ticketStore.setLoadTicket().then(() => {
+    tickets.value = ticketStore.getLoadTicket;
+  });
+};
+
+const openTicket = (ticket) => {
+  selectedTicket.value = ticket;
+  isTicketOpen.value = true;
+};
+
+const closeTicket = () => {
+  isTicketOpen.value = false;
+};
+
+const deleteTicket = (ticketId) => {
+  ticketStore.setDeleteTicket(ticketId).then(() => {
+    fetchDevelopersAndTickets();
+  }).catch(err => {
+    console.error("Failed to delete ticket:", err);
+  });
+};
+
+onMounted(fetchDevelopersAndTickets);
+</script>
+
+>>>>>>> 690a49e423641a90ef25cda083a09b92c48c995f
 <template>
   <div class="p-6 relative">
     <h2 class="text-2xl font-semibold mb-4 text-blue-500">Tickets</h2>
@@ -69,6 +125,7 @@
     <transition name="slide">
       <div
         v-if="isTicketOpen"
+<<<<<<< HEAD
         class="fixed right-0 top-0 bottom-0 w-1/3 bg-white shadow-lg p-4 overflow-y-auto"
       >
         <button @click="closeTicket" class="absolute top-4 right-4 text-gray-500">
@@ -148,6 +205,18 @@
             </button>
           </div>
         </div>
+=======
+        class="fixed right-0 top-0 bottom-0 w-1/2 bg-white shadow-lg p-4 overflow-y-auto"
+      >
+        <button @click="closeTicket" class="absolute top-4 right-4 text-gray-500">
+          <font-awesome-icon icon="times" />
+        </button>
+        <h3 class="text-xl font-semibold mb-4">{{ selectedTicket.full_name }}</h3>
+        <img :src="selectedTicket.image" alt="Ticket Image" class="w-24 h-24 mb-4" />
+        <p class="mb-4"><strong>Impact:</strong> {{ selectedTicket.impact }}</p>
+        <p>{{ selectedTicket.description }}</p>
+        <!-- Add more ticket details here if necessary -->
+>>>>>>> 690a49e423641a90ef25cda083a09b92c48c995f
       </div>
     </transition>
   </div>
@@ -231,8 +300,12 @@ onMounted(fetchDevelopersAndTickets);
 </script>
 
 <style scoped>
+<<<<<<< HEAD
 .slide-enter-active,
 .slide-leave-active {
+=======
+.slide-enter-active, .slide-leave-active {
+>>>>>>> 690a49e423641a90ef25cda083a09b92c48c995f
   transition: transform 0.3s ease;
 }
 .slide-enter-from {
@@ -241,4 +314,8 @@ onMounted(fetchDevelopersAndTickets);
 .slide-leave-to {
   transform: translateX(100%);
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 690a49e423641a90ef25cda083a09b92c48c995f
 </style>
