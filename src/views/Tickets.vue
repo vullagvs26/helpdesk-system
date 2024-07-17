@@ -1,48 +1,5 @@
-<script setup>
-import { ref, computed, onMounted } from "vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faTrashAlt, faSearch } from "@fortawesome/free-solid-svg-icons";
-
-// Importing images
-import profileImage from "@/assets/image/profile.png";
-import ticketImage from "@/assets/image/fujitsu-logo.png";
-import { useDeveloperStore } from "@/modules/developer.js";
-import { useTicketStore } from "@/modules/ticket.js";
-import { useSystemStore } from "@/modules/system.js";
-
-library.add(faTrashAlt, faSearch);
-
-const developerStore = useDeveloperStore();
-const ticketStore = useTicketStore();
-const systemStore = useSystemStore();
-const developers = ref(null);
-const tickets = ref([]);
-const systems = ref(null);
-
-//filter
-const searchQuery = ref("");
-
-const ticketsSearch = computed(() => {
-  return tickets.value.filter((ticket) =>
-    ticket.ticket_no.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
-});
-
-const fetchDevelopersAndTickets = () => {
-  developerStore.setLoadDeveloper().then(() => {
-    developers.value = developerStore.getLoadDeveloper;
-  });
-  ticketStore.setLoadTicket().then(() => {
-    tickets.value = ticketStore.getLoadTicket;
-  });
-};
-
-onMounted(fetchDevelopersAndTickets);
-</script>
-
 <template>
-  <div class="p-6">
+  <div class="p-6 relative">
     <h2 class="text-2xl font-semibold mb-4 text-blue-500">Tickets</h2>
 
     <div class="mb-6">
@@ -99,18 +56,189 @@ onMounted(fetchDevelopersAndTickets);
               {{ ticket.full_name }}
             </h4>
             <p class="text-gray-600">{{ ticket.description }}</p>
-            <button class="text-blue-500 mt-2">Open</button>
+            <button class="text-blue-500 mt-2" @click="openTicket(ticket)">Open</button>
           </div>
         </div>
-        <button class="text-gray-500">
-          <font-awesome-icon icon="trash-alt" />
+        <button class="text-gray-500 hover:text-red-500" @click="deleteTicket(ticket.id)">
+          <font-awesome-icon icon="trash-alt" class="hover:text-red-500" />
           Cancel
         </button>
       </div>
     </div>
+
+    <transition name="slide">
+      <div
+        v-if="isTicketOpen"
+        class="fixed right-0 top-0 bottom-0 w-1/3 bg-white shadow-lg p-4 overflow-y-auto"
+      >
+        <button @click="closeTicket" class="absolute top-4 right-4 text-gray-500">
+          <font-awesome-icon icon="times" class="text-xl" />
+        </button>
+        <div class="flex items-center">
+          <h3 class="text-xl font-semibold">{{ selectedTicket.ticket_no }} -</h3>
+          <p class="ml-2" :class="statusClass">{{ selectedTicket.status }}</p>
+        </div>
+        <h3 class="text-s font-semibold mb-4 text-gray-500">
+          {{ selectedTicket.system.system_name }}
+        </h3>
+        <div class="flex items-center">
+          <p class="mr-2"><strong>Assigned to:</strong></p>
+          <h3 class="text-l">
+            {{ selectedTicket.developer.assigned_to }}
+          </h3>
+        </div>
+        <p class=""><strong>Error:</strong></p>
+        <p class="mb-">{{ selectedTicket.description }}</p>
+        <div class="flex justify-center">
+          <img
+            :src="selectedTicket.image"
+            alt="Ticket Image"
+            class="object-fill h-48 w-96"
+          />
+        </div>
+        <div>
+          <p><strong>Resolution Notes:</strong></p>
+          <textarea
+            v-model="selectedTicket.remarks"
+            rows="3"
+            class="border rounded-lg p-2 w-full"
+          ></textarea>
+        </div>
+
+        <!-- Select Difficulty Section -->
+        <div class="mt-8">
+          <h3 class="text-xl font-semibold mb-4">Select Difficulty</h3>
+          <div class="flex justify-around">
+            <label
+              v-for="(option, index) in difficultyOptions"
+              :key="index"
+              class="flex flex-col items-center space-x-2 cursor-pointer"
+            >
+              <input
+                type="radio"
+                v-model="selectedDifficulty"
+                :value="option.value"
+                class="form-radio h-4 w-4 text-blue-500 border-gray-300 focus:ring-blue-400"
+              />
+              <span class="text-lg font-medium text-gray-800">{{ option.label }}</span>
+              <span class="text-sm text-gray-500">{{ option.description }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Add more ticket details here if necessary -->
+
+        <div
+          class="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200"
+        >
+          <div class="flex justify-center">
+            <button
+              @click="startTicket"
+              style="flex-basis: 50%"
+              class="flex items-center justify-center px-4 bg-green-400 text-white rounded mr-2 hover:bg-green-500 w-full md:w-auto"
+            >
+              <font-awesome-icon icon="play" class="mr-2" /> Start
+            </button>
+            <button
+              @click="closeTicket"
+              style="flex-basis: 50%"
+              class="flex items-center justify-center px-4 bg-red-500 text-white rounded hover:bg-red-600 w-full md:w-auto"
+            >
+              <font-awesome-icon icon="times" class="mr-2" /> Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
+<script setup>
+import { ref, computed, onMounted } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faTrashAlt, faSearch, faTimes, faPlay } from "@fortawesome/free-solid-svg-icons";
+import { useDeveloperStore } from "@/modules/developer.js";
+import { useTicketStore } from "@/modules/ticket.js";
+
+library.add(faTrashAlt, faSearch, faTimes, faPlay);
+
+const developerStore = useDeveloperStore();
+const ticketStore = useTicketStore();
+const developers = ref(null);
+const tickets = ref([]);
+const searchQuery = ref("");
+const isTicketOpen = ref(false);
+const selectedTicket = ref(null);
+const selectedSystem = ref(null);
+const selectedDifficulty = ref("");
+
+const difficultyOptions = [
+  { value: "easy", label: "Easy", description: "below 4hrs" },
+  { value: "medium", label: "Medium", description: "4hrs to 16hrs" },
+  { value: "hard", label: "Hard", description: "16hrs above" },
+];
+
+const statusClass = computed(() => {
+  switch (selectedTicket.value.status) {
+    case "Active":
+      return "text-red-500";
+    case "On-going":
+      return "text-orange-500";
+    case "Closed":
+      return "text-green-500";
+    default:
+      return "";
+  }
+});
+
+const ticketsSearch = computed(() => {
+  return tickets.value.filter((ticket) =>
+    ticket.ticket_no.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
+
+const fetchDevelopersAndTickets = () => {
+  developerStore.setLoadDeveloper().then(() => {
+    developers.value = developerStore.getLoadDeveloper;
+  });
+  ticketStore.setLoadTicket().then(() => {
+    tickets.value = ticketStore.getLoadTicket;
+  });
+};
+
+const openTicket = (ticket) => {
+  selectedTicket.value = ticket;
+  isTicketOpen.value = true;
+};
+
+const closeTicket = () => {
+  isTicketOpen.value = false;
+};
+
+const deleteTicket = (ticketId) => {
+  ticketStore
+    .setDeleteTicket(ticketId)
+    .then(() => {
+      fetchDevelopersAndTickets();
+    })
+    .catch((err) => {
+      console.error("Failed to delete ticket:", err);
+    });
+};
+
+onMounted(fetchDevelopersAndTickets);
+</script>
+
 <style scoped>
-/* Add any additional styling here */
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease;
+}
+.slide-enter-from {
+  transform: translateX(100%);
+}
+.slide-leave-to {
+  transform: translateX(100%);
+}
 </style>
