@@ -53,7 +53,7 @@ export const useDeveloperStore = defineStore({
       // Action to update a developer
       setUpdateDeveloper(payload) {
         return new Promise((resolve, reject) => {
-          const developerId = payload.id; // Assuming payload has an 'id' field
+          const developerId = payload.id; 
           axios
             .put(`developers/${developerId}`, payload)
             .then((response) => {

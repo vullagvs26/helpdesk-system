@@ -29,8 +29,18 @@
       </div>
     </div>
 
-    <div class="mb-6 flex justify-between items-center">
-      <h3 class="text-xl font-medium">Ticket List</h3>
+    <div class="mb-6 flex items-center justify-between">
+      <div class="flex items-center">
+        <h3 class="text-xl font-medium mr-4">Ticket List</h3>
+        <div class="relative">
+          <select v-model="selectedStatus" class="border rounded-full px-4 py-1">
+            <option value="all">All</option>
+            <option value="Active">Active</option>
+            <option value="On-going">On-going</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
+      </div>
       <div class="relative">
         <input
           type="text"
@@ -44,7 +54,7 @@
 
     <div>
       <div
-        v-for="ticket in ticketsSearch"
+        v-for="ticket in filteredTickets"
         :key="ticket.id"
         class="mb-4 p-4 bg-white border border-gray-200 rounded-lg flex justify-between items-center"
       >
@@ -172,6 +182,19 @@ const isTicketOpen = ref(false);
 const selectedTicket = ref(null);
 const selectedSystem = ref(null);
 const selectedDifficulty = ref("");
+const selectedStatus = ref("all");
+
+const filteredTickets = computed(() => {
+  let filtered = tickets.value.filter((ticket) => {
+    let matchesStatus =
+      selectedStatus.value === "all" || ticket.status === selectedStatus.value;
+    let matchesSearch = ticket.ticket_no
+      .toLowerCase()
+      .includes(searchQuery.value.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
+  return filtered;
+});
 
 const difficultyOptions = [
   { value: "easy", label: "Easy", description: "below 4hrs" },
@@ -180,6 +203,7 @@ const difficultyOptions = [
 ];
 
 const statusClass = computed(() => {
+  if (!selectedTicket.value) return "";
   switch (selectedTicket.value.status) {
     case "Active":
       return "text-red-500";
@@ -190,12 +214,6 @@ const statusClass = computed(() => {
     default:
       return "";
   }
-});
-
-const ticketsSearch = computed(() => {
-  return tickets.value.filter((ticket) =>
-    ticket.ticket_no.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
 });
 
 const fetchDevelopersAndTickets = () => {
@@ -225,6 +243,22 @@ const deleteTicket = (ticketId) => {
     .catch((err) => {
       console.error("Failed to delete ticket:", err);
     });
+};
+
+const startTicket = () => {
+  if (selectedTicket.value && selectedTicket.value.status === "Active") {
+    selectedTicket.value.status = "On-going";
+    ticketStore
+      .updateTicketStatus(selectedTicket.value.id, "On-going")
+      .then(() => {
+        fetchDevelopersAndTickets();
+        isTicketOpen.value = false;
+      })
+      .catch((error) => {
+        console.error("Failed to update ticket status:", error);
+        // Optionally, show an error message to the user
+      });
+  }
 };
 
 onMounted(fetchDevelopersAndTickets);

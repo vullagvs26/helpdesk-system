@@ -17,6 +17,7 @@ const ticketForm = ref({
   type_of_ticket: "",
   impact: "",
   status: "",
+  remarks: "",
   system_name_id: null,
   assigned_to_id: null,
   description: "",
@@ -55,6 +56,7 @@ const clearTicketForm = () => {
     type_of_ticket: "",
     impact: "",
     status: "",
+    remarks: "",
     system_name_id: null,
     assigned_to_id: null,
     description: "",
@@ -122,6 +124,7 @@ const submitTicketForm = async () => {
   formData.append("impact", ticketForm.value.impact);
   formData.append("status", ticketForm.value.status);
   formData.append("description", ticketForm.value.description);
+  formData.append("remarks", ticketForm.value.remarks);
   formData.append("system_name_id", ticketForm.value.system_name_id);
   formData.append("assigned_to_id", ticketForm.value.assigned_to_id);
   if (ticketForm.value.image) {

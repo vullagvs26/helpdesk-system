@@ -53,12 +53,14 @@
             </div>
             <div>
               <label for="status" class="block text-gray-700">Status</label>
-              <input
-                type="text"
+              <select
                 id="status"
                 v-model="developer.status"
                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-              />
+              >
+                <option value="Available">Available</option>
+                <option value="Busy">Busy</option>
+              </select>
             </div>
             <div>
               <label for="position" class="block text-gray-700">Position</label>

@@ -34,6 +34,19 @@ export const useTicketStore = defineStore({
                     });
             });
         },
+         // Action to update the status of a ticket
+         updateTicketStatus(ticketId, newStatus) {
+            return new Promise((resolve, reject) => {
+                axios.put(`tickets/${ticketId}`, { status: newStatus })
+                    .then(response => {
+                        // Optionally update local state or perform any other actions after successful update
+                        resolve(response.data);
+                    })
+                    .catch(err => {
+                        reject(err);
+                    });
+            });
+        },
 
         // Action to delete a ticket by ID
         setDeleteTicket(ticketId) {
@@ -46,7 +59,8 @@ export const useTicketStore = defineStore({
                         reject(err);
                     });
             });
-        }
+        },
+        
     
     },
 
