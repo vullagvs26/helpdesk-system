@@ -173,6 +173,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faTrashAlt, faSearch, faTimes, faPlay } from "@fortawesome/free-solid-svg-icons";
 import { useDeveloperStore } from "@/modules/developer.js";
 import { useTicketStore } from "@/modules/ticket.js";
+import moment from "moment";
 
 library.add(faTrashAlt, faSearch, faTimes, faPlay);
 
@@ -239,6 +240,7 @@ const fetchDevelopersAndTickets = () => {
   ticketStore.setLoadTicket().then(() => {
     tickets.value = ticketStore.getLoadTicket;
   });
+  console.log(moment().format("MMMM Do YYYY, h:mm:ss a"));
 };
 
 const openTicket = (ticket) => {
