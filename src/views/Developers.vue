@@ -82,12 +82,20 @@
       :onClose="closeModal"
       :onSave="addNewDeveloper"
     />
+
+    <EditDeveloperModal
+      :show="showEditModal"
+      :onClose="closeEditModal"
+      :onSave="saveEditedDeveloper"
+      :developerData="selectedDeveloper"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import AddDeveloperModal from "@/components/AddDeveloperModal.vue";
+import EditDeveloperModal from "@/components/EditDeveloperModal.vue";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -103,7 +111,9 @@ const developers = ref(null);
 const tickets = ref([]);
 
 const showModal = ref(false);
+const showEditModal = ref(false);
 const activeDropdown = ref(null);
+const selectedDeveloper = ref(null);
 
 const addNewDeveloper = (payload) => {
   developerStore
@@ -114,6 +124,27 @@ const addNewDeveloper = (payload) => {
     })
     .catch((error) => {
       console.error("Failed to add new developer:", error);
+    });
+};
+
+const editDeveloper = (developer) => {
+  selectedDeveloper.value = { ...developer };
+  showEditModal.value = true;
+};
+
+const saveEditedDeveloper = (payload) => {
+  developerStore
+    .setUpdateDeveloper(payload)
+    .then(() => {
+      closeEditModal();
+      fetchDevelopers();
+    })
+    .catch((error) => {
+      console.error("Failed to save edited developer:", error);
+      // Log the specific error response from the server if available
+      if (error.response && error.response.data) {
+        console.error("Server error response:", error.response.data);
+      }
     });
 };
 
@@ -134,6 +165,15 @@ const openModal = () => {
 
 const closeModal = () => {
   showModal.value = false;
+};
+
+const openEditModal = () => {
+  showEditModal.value = true;
+};
+
+const closeEditModal = () => {
+  showEditModal.value = false;
+  selectedDeveloper.value = null;
 };
 
 const toggleDropdown = (id) => {

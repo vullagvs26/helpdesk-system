@@ -1,8 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useTicketStore } from '@/modules/ticket.js';
-import { useSystemStore } from '@/modules/system.js';
-import { useDeveloperStore } from '@/modules/developer.js';
+import { ref, onMounted } from "vue";
+import { useTicketStore } from "@/modules/ticket.js";
+import { useSystemStore } from "@/modules/system.js";
+import { useDeveloperStore } from "@/modules/developer.js";
 
 // Data
 const ticketStore = useTicketStore();
@@ -11,58 +11,58 @@ const developerStore = useDeveloperStore();
 
 const ticketForm = ref({
   id: null,
-  ticket_no: '',   // This will be generated automatically but not shown in the form
-  full_name: '',
-  email: '',
-  type_of_ticket: '',
-  impact: '',
-  status: '',
+  ticket_no: "", // This will be generated automatically but not shown in the form
+  full_name: "",
+  email: "",
+  type_of_ticket: "",
+  impact: "",
+  status: "",
   system_name_id: null,
   assigned_to_id: null,
-  description: '',
+  description: "",
   image: null,
 });
 
-const imagePreviews = ref([]);  // To store image previews
+const imagePreviews = ref([]); // To store image previews
 const errors = ref({});
 
 // Define ticket types and statuses
 const ticketTypes = ref([
-  { id: 1, name: 'Bug' },
-  { id: 2, name: 'Feature Request' },
-  { id: 3, name: 'Inquiry' },
+  { id: 1, name: "Bug" },
+  { id: 2, name: "Feature Request" },
+  { id: 3, name: "Inquiry" },
 ]);
 
 const ticketStatuses = ref([
-  { id: 1, name: 'Active' },
-  { id: 2, name: 'On-going' },
-  { id: 3, name: 'Closed' },
+  { id: 1, name: "Active" },
+  { id: 2, name: "On-going" },
+  { id: 3, name: "Closed" },
 ]);
 
 // Generate ticket number with "TCKT-" prefix
 const generateTicketNo = () => {
-  const prefix = 'TCKT-';
-  const uniqueNumber = Date.now();  // Use timestamp or any other unique value
+  const prefix = "TCKT-";
+  const uniqueNumber = Date.now(); // Use timestamp or any other unique value
   ticketForm.value.ticket_no = `${prefix}${uniqueNumber}`;
 };
 
 const clearTicketForm = () => {
   ticketForm.value = {
     id: null,
-    ticket_no: '',  // Reset ticket number
-    full_name: '',
-    email: '',
-    type_of_ticket: '',
-    impact: '',
-    status: '',
+    ticket_no: "", // Reset ticket number
+    full_name: "",
+    email: "",
+    type_of_ticket: "",
+    impact: "",
+    status: "",
     system_name_id: null,
     assigned_to_id: null,
-    description: '',
+    description: "",
     image: null,
   };
   imagePreviews.value = [];
   errors.value = {};
-  document.getElementById('image').value = '';
+  document.getElementById("image").value = "";
 };
 
 // Handle image file upload and preview
@@ -82,67 +82,77 @@ const handleImageUpload = (event) => {
 // Validate the form data
 const validateForm = () => {
   errors.value = {};
-  if (!ticketForm.value.full_name) errors.value.full_name = ['Name is required'];
-  if (!ticketForm.value.email) errors.value.email = ['Email is required'];
-  if (!ticketForm.value.type_of_ticket) errors.value.type_of_ticket = ['Type of Ticket is required'];
-  if (!ticketForm.value.impact) errors.value.impact = ['Impact is required'];
-  if (!ticketForm.value.status) errors.value.status = ['Status is required'];
-  if (!ticketForm.value.system_name_id) errors.value.system_name_id = ['System Name is required'];
-  if (!ticketForm.value.assigned_to_id) errors.value.assigned_to_id = ['Assigned To is required'];
-  if (!ticketForm.value.description) errors.value.description = ['Description is required'];
+  if (!ticketForm.value.full_name) errors.value.full_name = ["Name is required"];
+  if (!ticketForm.value.email) errors.value.email = ["Email is required"];
+  if (!ticketForm.value.type_of_ticket)
+    errors.value.type_of_ticket = ["Type of Ticket is required"];
+  if (!ticketForm.value.impact) errors.value.impact = ["Impact is required"];
+  if (!ticketForm.value.status) errors.value.status = ["Status is required"];
+  if (!ticketForm.value.system_name_id)
+    errors.value.system_name_id = ["System Name is required"];
+  if (!ticketForm.value.assigned_to_id)
+    errors.value.assigned_to_id = ["Assigned To is required"];
+  if (!ticketForm.value.description)
+    errors.value.description = ["Description is required"];
   return Object.keys(errors.value).length === 0;
 };
 
 // Submit the form data
 const submitTicketForm = async () => {
   if (!validateForm()) {
-    console.error('Form validation failed:', errors.value);
+    console.error("Form validation failed:", errors.value);
     return;
   }
 
   // Ensure ticket number is generated
   if (!ticketForm.value.ticket_no) generateTicketNo();
 
-  const selectedSystem = systemStore.getLoadSystem.find(system => system.id === ticketForm.value.system_name_id);
-  const assignedDeveloper = developerStore.getLoadDeveloper.find(developer => developer.id === ticketForm.value.assigned_to_id);
+  const selectedSystem = systemStore.getLoadSystem.find(
+    (system) => system.id === ticketForm.value.system_name_id
+  );
+  const assignedDeveloper = developerStore.getLoadDeveloper.find(
+    (developer) => developer.id === ticketForm.value.assigned_to_id
+  );
 
   const formData = new FormData();
-  formData.append('ticket_no', ticketForm.value.ticket_no);
-  formData.append('full_name', ticketForm.value.full_name);
-  formData.append('email', ticketForm.value.email);
-  formData.append('type_of_ticket', ticketForm.value.type_of_ticket);
-  formData.append('impact', ticketForm.value.impact);
-  formData.append('status', ticketForm.value.status);
-  formData.append('description', ticketForm.value.description);
-  formData.append('system_name_id', ticketForm.value.system_name_id);
-  formData.append('assigned_to_id', ticketForm.value.assigned_to_id);
+  formData.append("ticket_no", ticketForm.value.ticket_no);
+  formData.append("full_name", ticketForm.value.full_name);
+  formData.append("email", ticketForm.value.email);
+  formData.append("type_of_ticket", ticketForm.value.type_of_ticket);
+  formData.append("impact", ticketForm.value.impact);
+  formData.append("status", ticketForm.value.status);
+  formData.append("description", ticketForm.value.description);
+  formData.append("system_name_id", ticketForm.value.system_name_id);
+  formData.append("assigned_to_id", ticketForm.value.assigned_to_id);
   if (ticketForm.value.image) {
-    formData.append('image', ticketForm.value.image);
+    formData.append("image", ticketForm.value.image);
   }
 
   const payload = {
-    system_name: selectedSystem ? selectedSystem.system_name : '',
-    assigned_to_email: assignedDeveloper ? assignedDeveloper.email : '',
+    system_name: selectedSystem ? selectedSystem.system_name : "",
+    assigned_to_email: assignedDeveloper ? assignedDeveloper.email : "",
   };
 
   try {
     const res = await ticketStore.setStoreTicket(formData, payload);
-    if (res.status === 'success') {
+    if (res.status === "success") {
       await ticketStore.setLoadTicket();
-      alert(`Ticket created successfully! Your ticket number is ${ticketForm.value.ticket_no}`);
+      alert(
+        `Ticket created successfully! Your ticket number is ${ticketForm.value.ticket_no}`
+      );
       clearTicketForm();
     } else {
       errors.value = res.error || {};
-      console.error('Form submission error:', res.error);
+      console.error("Form submission error:", res.error);
     }
   } catch (error) {
-    console.error('Submission failed:', error);
+    console.error("Submission failed:", error);
   }
 };
 
 // Initialize data on mount
 onMounted(() => {
-  generateTicketNo();  // Generate ticket number when the component mounts
+  generateTicketNo(); // Generate ticket number when the component mounts
   ticketStore.setLoadTicket();
   systemStore.setLoadSystem();
   developerStore.setLoadDeveloper();
@@ -174,7 +184,9 @@ onMounted(() => {
               class="border border-gray-300 p-2 rounded"
               placeholder="(Ex: Vullag, Vincent)"
             />
-            <span v-if="errors.full_name" class="text-red-500">{{ errors.full_name[0] }}</span>
+            <span v-if="errors.full_name" class="text-red-500">{{
+              errors.full_name[0]
+            }}</span>
           </div>
           <!-- Email Field -->
           <div class="flex flex-col">
@@ -201,7 +213,9 @@ onMounted(() => {
                 {{ type.name }}
               </option>
             </select>
-            <span v-if="errors.type_of_ticket" class="text-red-500">{{ errors.type_of_ticket[0] }}</span>
+            <span v-if="errors.type_of_ticket" class="text-red-500">{{
+              errors.type_of_ticket[0]
+            }}</span>
           </div>
           <!-- Impact Field -->
           <div class="flex flex-col">
@@ -227,7 +241,11 @@ onMounted(() => {
               class="border border-gray-300 p-2 rounded"
             >
               <option value="" disabled>Select Status</option>
-              <option v-for="status in ticketStatuses" :key="status.id" :value="status.name">
+              <option
+                v-for="status in ticketStatuses"
+                :key="status.id"
+                :value="status.name"
+              >
                 {{ status.name }}
               </option>
             </select>
@@ -250,7 +268,9 @@ onMounted(() => {
                 {{ system.system_name }}
               </option>
             </select>
-            <span v-if="errors.system_name_id" class="text-red-500">{{ errors.system_name_id[0] }}</span>
+            <span v-if="errors.system_name_id" class="text-red-500">{{
+              errors.system_name_id[0]
+            }}</span>
           </div>
           <!-- Assigned To Field -->
           <div class="flex flex-col">
@@ -269,7 +289,9 @@ onMounted(() => {
                 {{ developer.email }}
               </option>
             </select>
-            <span v-if="errors.assigned_to_id" class="text-red-500">{{ errors.assigned_to_id[0] }}</span>
+            <span v-if="errors.assigned_to_id" class="text-red-500">{{
+              errors.assigned_to_id[0]
+            }}</span>
           </div>
           <!-- Description Field -->
           <div class="flex flex-col">
@@ -281,7 +303,9 @@ onMounted(() => {
               rows="4"
               placeholder="Describe your request or error encountered"
             ></textarea>
-            <span v-if="errors.description" class="text-red-500">{{ errors.description[0] }}</span>
+            <span v-if="errors.description" class="text-red-500">{{
+              errors.description[0]
+            }}</span>
           </div>
           <!-- Image Upload Field -->
           <div class="flex flex-col">
