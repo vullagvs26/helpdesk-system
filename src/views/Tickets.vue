@@ -106,7 +106,7 @@
           <img
             :src="selectedTicket.image"
             alt="Ticket Image"
-            class="object-fill h-48 w-96"
+            class="object-fill h-40 w-96"
           />
         </div>
         <div>
@@ -120,7 +120,7 @@
         </div>
 
         <!-- Select Difficulty Section -->
-        <div class="mt-8">
+        <div class="">
           <h3 class="text-xl font-semibold mb-4">Select Difficulty</h3>
           <div class="flex justify-around">
             <label
@@ -138,6 +138,25 @@
               <span class="text-lg font-medium text-gray-800">{{ option.label }}</span>
               <span class="text-sm text-gray-500">{{ option.description }}</span>
             </label>
+          </div>
+        </div>
+
+        <!-- Timeline Section -->
+        <div class="flex flex-col items-center">
+          <h3 class="text-xl font-semibold mb-4">Timeline</h3>
+          <div class="relative border-l border-gray-300">
+            <div
+              v-for="(event, index) in timelineEvents"
+              :key="index"
+              class="flex items-start"
+            >
+              <div class="absolute w-3 h-3 bg-blue-500 rounded-full -left-1.5" />
+              <div class="ml-4">
+                <h4 class="font-semibold">{{ event.title }}</h4>
+                <p class="text-sm text-gray-500">{{ event.date }}</p>
+                <p class="text-gray-600">{{ event.time }}</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -203,6 +222,32 @@ const filteredTickets = computed(() => {
     return matchesStatus && matchesSearch;
   });
   return filtered;
+});
+
+const timelineEvents = computed(() => {
+  if (!selectedTicket.value) return [];
+  return [
+    {
+      title: "Created At",
+      date: moment(selectedTicket.value.created_at).format("YYYY-MM-DD"),
+      time: moment(selectedTicket.value.created_at).format("HH:mm:ss"),
+    },
+    {
+      title: "Started At",
+      date: moment(selectedTicket.value.started_at).format("YYYY-MM-DD"),
+      time: moment(selectedTicket.value.started_at).format("HH:mm:ss"),
+    },
+    {
+      title: "Completed At",
+      date: moment(selectedTicket.value.completed_at).format("YYYY-MM-DD"),
+      time: moment(selectedTicket.value.completed_at).format("HH:mm:ss"),
+    },
+    {
+      title: "Completed Time",
+      date: selectedTicket.value.completed_time || "N/A",
+      time: "",
+    },
+  ];
 });
 
 const difficultyOptions = [
