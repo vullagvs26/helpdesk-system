@@ -267,11 +267,32 @@ const closeTicket = () => {
   }).then((result) => {
     if (result.isConfirmed) {
       const ticketId = selectedTicket.value.id;
-      const remarks = selectedTicket.value.remarks || ""; // Get current remarks
+      const remarks = selectedTicket.value.remarks || "";
+      const completed_at = moment().format("YYYY-MM-DD HH:mm:ss");
 
-      // Update ticket status and remarks
+      // Get the start time
+      const started_at = moment(selectedTicket.value.started_at);
+
+      // Calculate the time difference
+      const duration = moment.duration(moment(completed_at).diff(started_at));
+      const hours = Math.floor(duration.asHours());
+      const minutes = duration.minutes();
+
+      // Format completed_time as HH:MM
+      const completed_time = `${String(hours).padStart(2, "0")}:${String(
+        minutes
+      ).padStart(2, "0")}`;
+
+      // Update the ticket
       ticketStore
-        .updateTicketStatus(ticketId, "Closed", remarks) // Pass remarks here
+        .updateTicketStatus(
+          ticketId,
+          "Closed",
+          remarks,
+          started_at.format("YYYY-MM-DD HH:mm:ss"),
+          completed_at,
+          completed_time
+        )
         .then(() => {
           fetchDevelopersAndTickets();
           isTicketOpen.value = false;
@@ -296,16 +317,32 @@ const deleteTicket = (ticketId) => {
 
 const startTicket = () => {
   if (selectedTicket.value && selectedTicket.value.status === "Active") {
+    const currentTime = moment().format("YYYY-MM-DD HH:mm:ss"); // Get current time
+
+    // Update local state
     selectedTicket.value.status = "On-going";
+    selectedTicket.value.started_at = currentTime;
+
     ticketStore
-      .updateTicketStatus(selectedTicket.value.id, "On-going")
+      .updateTicketStatus(
+        selectedTicket.value.id,
+        "On-going",
+        "",
+        currentTime // Send started_at to API
+      )
       .then(() => {
-        fetchDevelopersAndTickets();
-        isTicketOpen.value = false;
+        // Update the tickets list locally
+        const index = tickets.value.findIndex(
+          (ticket) => ticket.id === selectedTicket.value.id
+        );
+        if (index !== -1) {
+          tickets.value[index] = { ...selectedTicket.value }; // Update the specific ticket
+        }
+        fetchDevelopersAndTickets(); // Refresh the ticket list
+        isTicketOpen.value = false; // Close the ticket view
       })
       .catch((error) => {
         console.error("Failed to update ticket status:", error);
-        // Optionally, show an error message to the user
       });
   }
 };

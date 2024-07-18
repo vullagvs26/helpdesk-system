@@ -22,6 +22,9 @@ const ticketForm = ref({
   assigned_to_id: null,
   description: "",
   image: null,
+  started_at: "",
+  completed_at: "",
+  completed_time: "",
 });
 
 const imagePreviews = ref([]); // To store image previews
@@ -61,6 +64,9 @@ const clearTicketForm = () => {
     assigned_to_id: null,
     description: "",
     image: null,
+    started_at: null,
+    completed_at: null,
+    completed_time: null,
   };
   imagePreviews.value = [];
   errors.value = {};
@@ -127,6 +133,9 @@ const submitTicketForm = async () => {
   formData.append("remarks", ticketForm.value.remarks);
   formData.append("system_name_id", ticketForm.value.system_name_id);
   formData.append("assigned_to_id", ticketForm.value.assigned_to_id);
+  formData.append("started_at", ticketForm.value.started_at);
+  formData.append("completed_at", ticketForm.value.completed_at);
+  formData.append("completed_time", ticketForm.value.completed_time);
   if (ticketForm.value.image) {
     formData.append("image", ticketForm.value.image);
   }
