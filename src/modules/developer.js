@@ -50,20 +50,24 @@ export const useDeveloperStore = defineStore({
           });
       });
     },
-      // Action to update a developer
-      setUpdateDeveloper(payload) {
-        return new Promise((resolve, reject) => {
-          const developerId = payload.id; 
-          axios
-            .put(`developers/${developerId}`, payload)
-            .then((response) => {
-              resolve(response.data);
-            })
-            .catch((err) => {
-              reject(err);
-            });
-        });
-      },
+    // Action to update a developer
+    setUpdateDeveloper(payload) {
+      return new Promise((resolve, reject) => {
+        const developerId = payload.get("id"); // Get the developer ID from FormData
+        axios
+          .put(`developers/${developerId}`, payload)
+          .then((response) => {
+            resolve(response.data);
+          })
+          .catch((err) => {
+            console.error(
+              "Update error:",
+              err.response ? err.response.data : err
+            );
+            reject(err);
+          });
+      });
+    },
   },
 
   getters: {

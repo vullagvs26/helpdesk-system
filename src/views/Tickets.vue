@@ -84,7 +84,7 @@
         v-if="isTicketOpen"
         class="fixed right-0 top-0 bottom-0 w-1/3 bg-white shadow-lg p-4 overflow-y-auto"
       >
-        <button @click="closeTicket" class="absolute top-4 right-4 text-gray-500">
+        <button @click="closeSlide" class="absolute top-4 right-4 text-gray-500">
           <font-awesome-icon icon="times" class="text-xl" />
         </button>
         <div class="flex items-center">
@@ -115,6 +115,7 @@
             v-model="selectedTicket.remarks"
             rows="3"
             class="border rounded-lg p-2 w-full"
+            :disabled="selectedTicket.status === 'Closed'"
           ></textarea>
         </div>
 
@@ -132,6 +133,7 @@
                 v-model="selectedDifficulty"
                 :value="option.value"
                 class="form-radio h-4 w-4 text-blue-500 border-gray-300 focus:ring-blue-400"
+                :disabled="selectedTicket.status === 'Closed'"
               />
               <span class="text-lg font-medium text-gray-800">{{ option.label }}</span>
               <span class="text-sm text-gray-500">{{ option.description }}</span>
@@ -146,6 +148,7 @@
         >
           <div class="flex justify-center">
             <button
+              v-if="selectedTicket.status === 'Active'"
               @click="startTicket"
               style="flex-basis: 50%"
               class="flex items-center justify-center px-4 bg-green-400 text-white rounded mr-2 hover:bg-green-500 w-full md:w-auto"
@@ -153,6 +156,7 @@
               <font-awesome-icon icon="play" class="mr-2" /> Start
             </button>
             <button
+              v-if="selectedTicket.status !== 'Closed'"
               @click="closeTicket"
               style="flex-basis: 50%"
               class="flex items-center justify-center px-4 bg-red-500 text-white rounded hover:bg-red-600 w-full md:w-auto"
@@ -174,6 +178,7 @@ import { faTrashAlt, faSearch, faTimes, faPlay } from "@fortawesome/free-solid-s
 import { useDeveloperStore } from "@/modules/developer.js";
 import { useTicketStore } from "@/modules/ticket.js";
 import moment from "moment";
+import Swal from "sweetalert2";
 
 library.add(faTrashAlt, faSearch, faTimes, faPlay);
 
@@ -240,7 +245,6 @@ const fetchDevelopersAndTickets = () => {
   ticketStore.setLoadTicket().then(() => {
     tickets.value = ticketStore.getLoadTicket;
   });
-  console.log(moment().format("MMMM Do YYYY, h:mm:ss a"));
 };
 
 const openTicket = (ticket) => {
@@ -248,8 +252,35 @@ const openTicket = (ticket) => {
   isTicketOpen.value = true;
 };
 
-const closeTicket = () => {
+const closeSlide = (ticket) => {
   isTicketOpen.value = false;
+};
+
+const closeTicket = () => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You will lose any unsaved changes!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, close it!",
+    cancelButtonText: "No, keep it open",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const ticketId = selectedTicket.value.id;
+      const remarks = selectedTicket.value.remarks || ""; // Get current remarks
+
+      // Update ticket status and remarks
+      ticketStore
+        .updateTicketStatus(ticketId, "Closed", remarks) // Pass remarks here
+        .then(() => {
+          fetchDevelopersAndTickets();
+          isTicketOpen.value = false;
+        })
+        .catch((error) => {
+          console.error("Failed to update ticket:", error);
+        });
+    }
+  });
 };
 
 const deleteTicket = (ticketId) => {

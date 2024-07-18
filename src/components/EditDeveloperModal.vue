@@ -163,7 +163,6 @@ const closeAndReset = () => {
 };
 
 const saveChanges = () => {
-  console.log("Saving changes with data:", developer.value);
   save();
   resetDeveloper();
 };
@@ -191,18 +190,22 @@ const close = () => {
 };
 
 const save = () => {
+  console.log("Saving changes with data:", developer.value);
   const formData = new FormData();
+  formData.append("id", props.developerData.id); // Include developer ID
   formData.append("first_name", developer.value.first_name);
   formData.append("last_name", developer.value.last_name);
   formData.append("status", developer.value.status);
   formData.append("position", developer.value.position);
   formData.append("email", developer.value.email);
   formData.append("description", developer.value.description);
+
   if (developer.value.profile_photo) {
     formData.append("profile_photo", developer.value.profile_photo);
   }
+
   props.onSave(formData);
-  close();
+  resetDeveloper();
 };
 
 const uploadPhoto = (event) => {

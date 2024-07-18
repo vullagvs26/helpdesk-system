@@ -141,10 +141,6 @@ const saveEditedDeveloper = (payload) => {
     })
     .catch((error) => {
       console.error("Failed to save edited developer:", error);
-      // Log the specific error response from the server if available
-      if (error.response && error.response.data) {
-        console.error("Server error response:", error.response.data);
-      }
     });
 };
 
