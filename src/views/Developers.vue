@@ -61,11 +61,15 @@
             <p class="text-gray-500">Closed</p>
           </div>
         </div>
-        <button
-          class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors"
+        <span
+          class="px-4 py-2 rounded-full text-sm font-semibold"
+          :class="{
+            'bg-green-100 text-green-600': developer.status === 'Available',
+            'bg-red-100 text-red-600': developer.status === 'Busy'
+          }"
         >
-          View Profile
-        </button>
+          {{ developer.status }}
+        </span>
       </div>
 
       <div
