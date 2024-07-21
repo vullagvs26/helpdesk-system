@@ -16,7 +16,7 @@ const ticketForm = ref({
   email: "",
   type_of_ticket: "",
   impact: "",
-  status: "",
+  status: "Active",
   remarks: "",
   system_name_id: null,
   assigned_to_id: null,
@@ -58,7 +58,7 @@ const clearTicketForm = () => {
     email: "",
     type_of_ticket: "",
     impact: "",
-    status: "",
+    status: "Active",
     remarks: "",
     system_name_id: null,
     assigned_to_id: null,
@@ -247,20 +247,16 @@ onMounted(() => {
           <!-- Status Field -->
           <div class="flex flex-col">
             <label for="status" class="mb-1 font-semibold">Status</label>
-            <select
+            <input
+              type="text"
               id="status"
               v-model="ticketForm.status"
               class="border border-gray-300 p-2 rounded"
+              placeholder="Active"
+              disabled
             >
-              <option value="" disabled>Select Status</option>
-              <option
-                v-for="status in ticketStatuses"
-                :key="status.id"
-                :value="status.name"
-              >
-                {{ status.name }}
-              </option>
-            </select>
+              
+            </input>
             <span v-if="errors.status" class="text-red-500">{{ errors.status[0] }}</span>
           </div>
           <!-- System Name Field -->
