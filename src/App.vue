@@ -1,23 +1,19 @@
 <template>
-  <div class="flex h-screen bg-gray-200">
-    <Sidebar />
+  <div class="min-h-screen flex">
+    <Sidebar v-if="state.isAuthenticated" />
     <div class="flex-1 flex flex-col">
-      <Navbar />
+      <Navbar v-if="state.isAuthenticated" />
       <router-view class="flex-1 overflow-hidden" />
     </div>
   </div>
 </template>
 
-<script>
-import Sidebar from './components/Sidebar.vue';
-import Navbar from './components/Navbar.vue';
+<script setup>
+import Sidebar from "./components/Sidebar.vue";
+import Navbar from "./components/Navbar.vue";
+import useAuth from "@/modules/auth";
 
-export default {
-  components: {
-    Sidebar,
-    Navbar,
-  },
-};
+const { state } = useAuth();
 </script>
 
 <style scoped>
