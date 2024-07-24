@@ -226,28 +226,52 @@ const filteredTickets = computed(() => {
 
 const timelineEvents = computed(() => {
   if (!selectedTicket.value) return [];
-  return [
-    {
+
+  const events = [];
+
+  // Format Created At
+  if (selectedTicket.value.created_at) {
+    const createdAt = moment(selectedTicket.value.created_at);
+    events.push({
       title: "Created At",
-      date: moment(selectedTicket.value.created_at).format("YYYY-MM-DD"),
-      time: moment(selectedTicket.value.created_at).format("HH:mm:ss"),
-    },
-    {
+      date: createdAt.format("YYYY-MM-DD"),
+      time: createdAt.format("HH:mm:ss"),
+    });
+  }
+
+  // Format Started At
+  if (selectedTicket.value.started_at) {
+    const startedAt = moment(selectedTicket.value.started_at);
+    events.push({
       title: "Started At",
-      date: moment(selectedTicket.value.started_at).format("YYYY-MM-DD"),
-      time: moment(selectedTicket.value.started_at).format("HH:mm:ss"),
-    },
-    {
+      date: startedAt.format("YYYY-MM-DD"),
+      time: startedAt.format("HH:mm:ss"),
+    });
+  }
+
+  // Format Completed At
+  if (selectedTicket.value.completed_at) {
+    const completedAt = moment(selectedTicket.value.completed_at);
+    events.push({
       title: "Completed At",
-      date: moment(selectedTicket.value.completed_at).format("YYYY-MM-DD"),
-      time: moment(selectedTicket.value.completed_at).format("HH:mm:ss"),
-    },
-    {
+      date: completedAt.format("YYYY-MM-DD"),
+      time: completedAt.format("HH:mm:ss"),
+    });
+  }
+
+  // Include Completed Time with Seconds
+  if (selectedTicket.value.completed_time) {
+    const completedTime = selectedTicket.value.completed_time;
+    events.push({
       title: "Completed Time",
-      date: selectedTicket.value.completed_time || "N/A",
-      time: "",
-    },
-  ];
+      date: "", // You mentioned just HH:MM format, so date can be empty
+      time: completedTime, // Assuming completed_time is in HH:MM:SS format
+    });
+  }
+
+  // Add additional events as needed
+
+  return events;
 });
 
 const difficultyOptions = [
@@ -292,9 +316,12 @@ const fetchDevelopersAndTickets = () => {
   });
 };
 
-const openTicket = (ticket) => {
+const openTicket = async (ticket) => {
   selectedTicket.value = ticket;
   isTicketOpen.value = true;
+
+  // Ensure any async operations are awaited properly
+  await fetchDevelopersAndTickets();
 };
 
 const closeSlide = (ticket) => {
