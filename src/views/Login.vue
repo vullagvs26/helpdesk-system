@@ -4,13 +4,11 @@
       <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
       <form @submit.prevent="handleLogin">
         <div class="mb-4">
-          <label for="name" class="block text-gray-700 font-semibold mb-2"
-            >Username</label
-          >
+          <label for="email" class="block text-gray-700 font-semibold mb-2">Email</label>
           <input
-            type="text"
-            id="name"
-            v-model="name"
+            type="email"
+            id="email"
+            v-model="email"
             class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
             required
           />
@@ -48,7 +46,7 @@ import axios from "axios";
 import { useRouter } from "vue-router";
 import useAuth from "@/modules/auth";
 
-const name = ref("");
+const email = ref("");
 const password = ref("");
 const router = useRouter();
 const { login } = useAuth();
@@ -56,9 +54,9 @@ const { login } = useAuth();
 const handleLogin = async () => {
   try {
     const response = await axios.post(
-      "/login",
+      "/login", // Ensure this matches your back-end login endpoint
       {
-        name: name.value,
+        email: email.value,
         password: password.value,
       }
     );
@@ -70,10 +68,10 @@ const handleLogin = async () => {
     login(response.data.token);
 
     // Redirect to the dashboard
-    router.push("/Dashboard");
+    router.push("/Dashboard"); // Ensure this matches your route
   } catch (error) {
     console.error("Login failed:", error);
-    alert("Invalid username or password");
+    alert("Invalid email or password");
   }
 };
 </script>
