@@ -65,27 +65,13 @@
           class="px-4 py-2 rounded-full text-sm font-semibold"
           :class="{
             'bg-green-100 text-green-600': developer.status === 'Available',
-            'bg-red-100 text-red-600': developer.status === 'Busy'
+            'bg-red-100 text-red-600': developer.status === 'Busy',
           }"
         >
           {{ developer.status }}
         </span>
       </div>
-
-      <div
-        @click="openModal"
-        class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow cursor-pointer flex items-center justify-center"
-      >
-        <div class="text-gray-400 text-6xl">+</div>
-        <p class="text-blue-600 font-semibold mt-4">Add New</p>
-      </div>
     </div>
-
-    <AddDeveloperModal
-      :show="showModal"
-      :onClose="closeModal"
-      :onSave="addNewDeveloper"
-    />
 
     <EditDeveloperModal
       :show="showEditModal"
@@ -98,7 +84,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import AddDeveloperModal from "@/components/AddDeveloperModal.vue";
+
 import EditDeveloperModal from "@/components/EditDeveloperModal.vue";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -118,18 +104,6 @@ const showModal = ref(false);
 const showEditModal = ref(false);
 const activeDropdown = ref(null);
 const selectedDeveloper = ref(null);
-
-const addNewDeveloper = (payload) => {
-  developerStore
-    .setStoreDeveloper(payload)
-    .then(() => {
-      closeModal();
-      fetchDevelopers();
-    })
-    .catch((error) => {
-      console.error("Failed to add new developer:", error);
-    });
-};
 
 const editDeveloper = (developer) => {
   selectedDeveloper.value = { ...developer };
@@ -155,16 +129,11 @@ const deleteDeveloper = (developerId) => {
       fetchDevelopers();
     })
     .catch((error) => {
-      console.error(`Failed to delete developer with ID ${developerId}:`, error);
+      console.error(
+        `Failed to delete developer with ID ${developerId}:`,
+        error
+      );
     });
-};
-
-const openModal = () => {
-  showModal.value = true;
-};
-
-const closeModal = () => {
-  showModal.value = false;
 };
 
 const openEditModal = () => {

@@ -1,47 +1,57 @@
 <template>
-  <div class="p-6 bg-gray-100 min-h-screen w-full">
-    <h2 class="text-2xl font-semibold mb-4 text-blue-600">Ticket Overview</h2>
+  <div class="dashboard-wrapper">
+    <div class="dashboard-container bg-gray-100 p-8">
+      <h2 class="text-2xl font-semibold mb-4 text-blue-600">Ticket Overview</h2>
 
-    <div class="flex flex-wrap gap-4 mb-8">
-      <div
-        class="stat-card bg-white rounded-lg shadow-lg p-6 text-center flex-1 min-w-[200px]"
-      >
-        <h3 class="stat-title text-lg font-medium text-gray-700">Active Tickets Today</h3>
-        <p class="stat-number text-red-600 text-4xl font-bold">{{ activeTickets }}</p>
-      </div>
-      <div
-        class="stat-card bg-white rounded-lg shadow-lg p-6 text-center flex-1 min-w-[200px]"
-      >
-        <h3 class="stat-title text-lg font-medium text-gray-700">On-going</h3>
-        <p class="stat-number text-yellow-500 text-4xl font-bold">{{ ongoingTickets }}</p>
-      </div>
-      <div
-        class="stat-card bg-white rounded-lg shadow-lg p-6 text-center flex-1 min-w-[200px]"
-      >
-        <h3 class="stat-title text-lg font-medium text-gray-700">Closed</h3>
-        <p class="stat-number text-green-500 text-4xl font-bold">{{ closedTickets }}</p>
-      </div>
-    </div>
-
-    <div class="flex flex-wrap gap-4 mb-8">
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 flex-1 min-w-[300px] h-[500px] flex items-center justify-center"
-      >
-        <div class="w-800px">
-          <h3 class="text-lg font-medium text-gray-700 mb-4 text-center">
-            Tickets by Priority
+      <div class="flex flex-wrap gap-4 mb-8">
+        <div
+          class="stat-card bg-white rounded-lg shadow-lg p-6 text-center flex-1 min-w-[200px]"
+        >
+          <h3 class="stat-title text-lg font-medium text-gray-700">
+            Active Tickets Today
           </h3>
-          <canvas id="ticketsByPriority"></canvas>
+          <p class="stat-number text-red-600 text-4xl font-bold">
+            {{ activeTickets }}
+          </p>
+        </div>
+        <div
+          class="stat-card bg-white rounded-lg shadow-lg p-6 text-center flex-1 min-w-[200px]"
+        >
+          <h3 class="stat-title text-lg font-medium text-gray-700">On-going</h3>
+          <p class="stat-number text-yellow-500 text-4xl font-bold">
+            {{ ongoingTickets }}
+          </p>
+        </div>
+        <div
+          class="stat-card bg-white rounded-lg shadow-lg p-6 text-center flex-1 min-w-[200px]"
+        >
+          <h3 class="stat-title text-lg font-medium text-gray-700">Closed</h3>
+          <p class="stat-number text-green-500 text-4xl font-bold">
+            {{ closedTickets }}
+          </p>
         </div>
       </div>
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 flex-1 min-w-[250px] h-[500px] flex items-center justify-center"
-      >
-        <div class="w-full">
-          <h3 class="text-lg font-medium text-gray-700 mb-4 text-center">
-            Tickets by Type
-          </h3>
-          <canvas id="ticketsByType"></canvas>
+
+      <div class="flex flex-wrap gap-4 mb-8">
+        <div
+          class="bg-white rounded-lg shadow-lg p-6 flex-1 min-w-[300px] h-[500px] flex items-center justify-center"
+        >
+          <div class="w-800px">
+            <h3 class="text-lg font-medium text-gray-700 mb-4 text-center">
+              Tickets by Priority
+            </h3>
+            <canvas id="ticketsByPriority"></canvas>
+          </div>
+        </div>
+        <div
+          class="bg-white rounded-lg shadow-lg p-6 flex-1 min-w-[250px] h-[500px] flex items-center justify-center"
+        >
+          <div class="w-full">
+            <h3 class="text-lg font-medium text-gray-700 mb-4 text-center">
+              Tickets by Type
+            </h3>
+            <canvas id="ticketsByType"></canvas>
+          </div>
         </div>
       </div>
     </div>
@@ -85,7 +95,8 @@ const renderCharts = () => {
   // Tickets by Priority
   const ticketPriorities = ["Low", "Medium", "High"];
   const ticketsByPriorityData = ticketPriorities.map((priority) => {
-    return ticketStore.items.filter((ticket) => ticket.impact === priority).length;
+    return ticketStore.items.filter((ticket) => ticket.impact === priority)
+      .length;
   });
 
   const ticketsByPriorityCtx = document
@@ -110,7 +121,9 @@ const renderCharts = () => {
     return acc;
   }, {});
 
-  const ticketsByTypeCtx = document.getElementById("ticketsByType").getContext("2d");
+  const ticketsByTypeCtx = document
+    .getElementById("ticketsByType")
+    .getContext("2d");
   new Chart(ticketsByTypeCtx, {
     type: "bar",
     data: {
@@ -134,9 +147,15 @@ body {
   font-family: "Inter", sans-serif;
 }
 
+.dashboard-wrapper {
+  overflow-y: hidden; /* Prevent the entire page from scrolling */
+}
+
 .dashboard-container {
-  max-width: 1400px;
+  max-width: 1650px;
   margin: 0 auto;
+  overflow-y: auto; /* Make the dashboard container scrollable */
+  height: calc(100vh - 4rem); /* Adjust the height as needed */
 }
 
 .stat-card {
