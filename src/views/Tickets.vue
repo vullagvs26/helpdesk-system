@@ -351,30 +351,39 @@ const closeTicket = () => {
       const minutes = duration.minutes();
 
       // Format completed_time as HH:MM
-      const completed_time = `${String(hours).padStart(2, "0")}:${String(
-        minutes
-      ).padStart(2, "0")}`;
+      const completed_time = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 
-      // Update the ticket
-      ticketStore
-        .updateTicketStatus(
-          ticketId,
-          "Closed",
-          remarks,
-          started_at.format("YYYY-MM-DD HH:mm:ss"),
-          completed_at,
-          completed_time
-        )
-        .then(() => {
-          fetchDevelopersAndTickets();
-          isTicketOpen.value = false;
-        })
-        .catch((error) => {
-          console.error("Failed to update ticket:", error);
-        });
+      // Update the ticket status
+      ticketStore.updateTicketStatus(
+        ticketId,
+        "Closed",
+        remarks,
+        started_at.format("YYYY-MM-DD HH:mm:ss"),
+        completed_at,
+        completed_time
+      )
+      .then(() => {
+        // Update the developer's status to 'Available'
+        if (selectedTicket.value.developer) {
+          const developerId = selectedTicket.value.developer.id;
+          return developerStore.setUpdateDeveloper({
+            id: developerId,
+            status: "Available",
+          });
+        }
+      })
+      .then(() => {
+        // Refresh the list of tickets and developers
+        fetchDevelopersAndTickets();
+        isTicketOpen.value = false;
+      })
+      .catch((error) => {
+        console.error("Failed to update ticket or developer status:", error);
+      });
     }
   });
 };
+
 
 const deleteTicket = (ticketId) => {
   ticketStore
@@ -391,10 +400,7 @@ const startTicket = () => {
   if (selectedTicket.value && selectedTicket.value.status === "Active") {
     const currentTime = moment().format("YYYY-MM-DD HH:mm:ss"); // Get current time
 
-    // Update local state
-    selectedTicket.value.status = "On-going";
-    selectedTicket.value.started_at = currentTime;
-
+    // Update ticket status to "On-going"
     ticketStore
       .updateTicketStatus(
         selectedTicket.value.id,
@@ -402,6 +408,16 @@ const startTicket = () => {
         "",
         currentTime // Send started_at to API
       )
+      .then(() => {
+        // Prepare data for updating developer's status
+        const developerId = selectedTicket.value.developer.id; // Assuming the developer ID is part of the selected ticket
+
+        // Update the developer's status to "Busy"
+        return developerStore.setUpdateDeveloper({
+          id: developerId,
+          status: "Busy",
+        });
+      })
       .then(() => {
         // Update the tickets list locally
         const index = tickets.value.findIndex(
@@ -414,7 +430,7 @@ const startTicket = () => {
         isTicketOpen.value = false; // Close the ticket view
       })
       .catch((error) => {
-        console.error("Failed to update ticket status:", error);
+        console.error("Failed to update status:", error);
       });
   }
 };

@@ -50,8 +50,8 @@ export const useDeveloperStore = defineStore({
           });
       });
     },
-     // Action to update a developer
-     setUpdateDeveloper(payload) {
+    // Action to update a developer
+    setUpdateDeveloper(payload) {
       return new Promise((resolve, reject) => {
         const developerId = payload.id; // Get the developer ID from the object
         axios

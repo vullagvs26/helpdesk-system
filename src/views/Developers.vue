@@ -33,7 +33,7 @@
           </div>
         </div>
         <img
-          :src="developer.profile_photo"
+          :src="developer.profile_photo || defaultProfilePhoto"
           alt="Developer Image"
           class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-blue-500"
         />
@@ -90,6 +90,8 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
 import { useDeveloperStore } from "@/modules/developer.js";
 import { useTicketStore } from "@/modules/ticket.js";
+import defaultProfilePhoto from '@/assets/image/default-profile.png';
+
 
 library.add(faEllipsisVertical);
 

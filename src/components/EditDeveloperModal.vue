@@ -12,7 +12,7 @@
                 v-if="developer.profile_photo"
                 :src="developer.profile_photo"
                 class="w-full h-full rounded-full border-4 border-blue-500"
-                alt=""
+                alt="Profile Photo"
               />
               <label
                 for="upload-photo"
@@ -109,6 +109,7 @@
 
 <script setup>
 import { ref, watch } from "vue";
+import { useDeveloperStore } from "@/modules/developer";
 
 const props = defineProps({
   show: {
@@ -162,10 +163,33 @@ const closeAndReset = () => {
   resetDeveloper();
 };
 
-const saveChanges = () => {
-  save();
-  resetDeveloper();
+const saveChanges = async () => {
+  if (!props.developerData.id) {
+    console.error("Developer ID is missing");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("status", developer.value.status);
+  formData.append("first_name", developer.value.first_name);
+  formData.append("last_name", developer.value.last_name);
+  formData.append("email", developer.value.email);
+  formData.append("position", developer.value.position);
+  formData.append("description", developer.value.description);
+
+  if (developer.value.file) {
+    formData.append("profile_photo", developer.value.file);
+  }
+
+  try {
+    const response = await useDeveloperStore().setUpdateDeveloper(formData);
+    console.log("Update response:", response);
+    closeAndReset();
+  } catch (error) {
+    console.error("Failed to save edited developer:", error);
+  }
 };
+
 
 const resetDeveloper = () => {
   developer.value = {
@@ -189,30 +213,11 @@ const close = () => {
   props.onClose();
 };
 
-const save = () => {
-  console.log("Saving changes with data:", developer.value);
-  const formData = new FormData();
-  formData.append("id", props.developerData.id); // Include developer ID
-  formData.append("first_name", developer.value.first_name);
-  formData.append("last_name", developer.value.last_name);
-  formData.append("status", developer.value.status);
-  formData.append("position", developer.value.position);
-  formData.append("email", developer.value.email);
-  formData.append("description", developer.value.description);
-
-  if (developer.value.profile_photo) {
-    formData.append("profile_photo", developer.value.profile_photo);
-  }
-
-  props.onSave(formData);
-  resetDeveloper();
-};
-
 const uploadPhoto = (event) => {
   const file = event.target.files[0];
   if (file) {
-    developer.value.profile_photo = file;
     developer.value.profile_photo = URL.createObjectURL(file);
+    developer.value.file = file; // Update with the actual file for FormData
   }
 };
 </script>
