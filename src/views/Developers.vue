@@ -1,7 +1,7 @@
 <template>
-  <div class="p-8 bg-gray-100 min-h-screen">
+  <div class="p-8 bg-gray-100 h-full">
     <h2 class="text-3xl font-bold mb-8 text-blue-600">Developers Overview</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
       <div
         v-for="(developer, index) in developers"
         :key="developer.id"
@@ -84,9 +84,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-
 import EditDeveloperModal from "@/components/EditDeveloperModal.vue";
-
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
@@ -129,10 +127,7 @@ const deleteDeveloper = (developerId) => {
       fetchDevelopers();
     })
     .catch((error) => {
-      console.error(
-        `Failed to delete developer with ID ${developerId}:`,
-        error
-      );
+      console.error(`Failed to delete developer with ID ${developerId}:`, error);
     });
 };
 

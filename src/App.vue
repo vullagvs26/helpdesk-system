@@ -1,9 +1,11 @@
 <template>
   <div class="min-h-screen flex">
-    <Sidebar v-if="state.isAuthenticated" />
-    <div class="flex-1 flex flex-col">
-      <Navbar v-if="state.isAuthenticated" />
-      <router-view class="flex-1 overflow-hidden" />
+    <Sidebar v-if="state.isAuthenticated" class="fixed-sidebar" />
+    <div class="flex-1 flex flex-col ml-sidebar">
+      <Navbar v-if="state.isAuthenticated" class="fixed-navbar" />
+      <div class="flex-1 overflow-auto">
+        <router-view class="content-area" />
+      </div>
     </div>
   </div>
 </template>
@@ -17,8 +19,7 @@ const { state } = useAuth();
 </script>
 
 <style scoped>
-/* Ensure the router-view does not cause extra scroll */
-.flex-1 {
-  overflow: hidden;
+.content-area {
+  height: calc(100vh - 56px);
 }
 </style>
