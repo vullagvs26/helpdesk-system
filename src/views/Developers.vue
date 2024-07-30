@@ -33,10 +33,15 @@
           </div>
         </div>
         <img
-          :src="developer.profile_photo || defaultProfilePhoto"
+          :src="
+            developer.profile_photo
+              ? `${developer.profile_photo}`
+              : defaultProfilePhoto
+          "
           alt="Developer Image"
           class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-blue-500"
         />
+
         <h3 class="font-semibold text-xl mb-2">
           {{ developer.first_name }} {{ developer.last_name }}
         </h3>
@@ -75,9 +80,9 @@
 
     <EditDeveloperModal
       :show="showEditModal"
-      :onClose="closeEditModal"
-      :onSave="saveEditedDeveloper"
       :developerData="selectedDeveloper"
+      @close="closeEditModal"
+      @save="saveEditedDeveloper"
     />
   </div>
 </template>
@@ -90,8 +95,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
 import { useDeveloperStore } from "@/modules/developer.js";
 import { useTicketStore } from "@/modules/ticket.js";
-import defaultProfilePhoto from '@/assets/image/default-profile.png';
-
+import defaultProfilePhoto from "@/assets/image/default-profile.png";
 
 library.add(faEllipsisVertical);
 
@@ -113,7 +117,8 @@ const editDeveloper = (developer) => {
 const saveEditedDeveloper = (payload) => {
   developerStore
     .setUpdateDeveloper(payload)
-    .then(() => {
+    .then((response) => {
+      console.log("API Response:", response);
       closeEditModal();
       fetchDevelopers();
     })
