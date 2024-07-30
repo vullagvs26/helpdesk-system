@@ -14,6 +14,8 @@
             :src="developer.profile_photo"
             alt="Developer Image"
             class="w-16 h-16 rounded-full mb-2"
+            @click="openImageModal(developer.profile_photo)"
+            
           />
           <p class="font-medium text-center">{{ developer.first_name }}</p>
           <p
@@ -59,7 +61,12 @@
         class="mb-4 p-4 bg-white border border-gray-200 rounded-lg flex justify-between items-center"
       >
         <div class="flex items-center">
-          <img :src="ticket.image" alt="Ticket Image" class="w-12 h-12 mr-4" />
+          <img 
+            :src="ticket.image" 
+            alt="Ticket Image" 
+            class="w-12 h-12 mr-4 cursor-pointer" 
+            @click="openImageModal(ticket.image)"
+          />
           <div>
             <div class="flex">
               <h4 class="font-semibold">{{ ticket.ticket_no }} |</h4>
@@ -67,8 +74,7 @@
                 {{ ticket.status }}
               </p>
             </div>
-
-            <p class="text-gray-600">{{ ticket.system.system }}</p>
+            <p class="text-gray-600">{{ ticket.system.system_name }}</p>
             <button class="text-blue-500 mt-2" @click="openTicket(ticket)">Open</button>
           </div>
         </div>
@@ -106,7 +112,8 @@
           <img
             :src="selectedTicket.image"
             alt="Ticket Image"
-            class="object-fill h-40 w-96"
+            class="object-fill h-40 w-96 cursor-pointer"
+            @click="openImageModal(selectedTicket.image)" 
           />
         </div>
         <div>
@@ -186,6 +193,14 @@
         </div>
       </div>
     </transition>
+
+    <!-- Image Modal -->
+    <div v-if="isImageModalOpen" class="modal fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+      <div class="modal-content bg-white p-6 relative">
+        <span class="close absolute top-4 right-4 text-3xl cursor-pointer" @click="closeImageModal">&times;</span>
+        <img :src="modalImageSrc" alt="Modal Image" class="modal-image" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -203,14 +218,16 @@ library.add(faTrashAlt, faSearch, faTimes, faPlay);
 
 const developerStore = useDeveloperStore();
 const ticketStore = useTicketStore();
-const developers = ref(null);
+const developers = ref([]);
 const tickets = ref([]);
 const searchQuery = ref("");
-const isTicketOpen = ref(false);
 const selectedTicket = ref(null);
-const selectedSystem = ref(null);
-const selectedDifficulty = ref("");
+const isTicketOpen = ref(false);
+const difficulty = ref("");
 const selectedStatus = ref("all");
+const isImageModalOpen = ref(false);
+const modalImageSrc = ref("");
+const selectedDifficulty = ref(""); 
 
 const filteredTickets = computed(() => {
   let filtered = tickets.value.filter((ticket) => {
@@ -229,7 +246,6 @@ const timelineEvents = computed(() => {
 
   const events = [];
 
-  // Format Created At
   if (selectedTicket.value.created_at) {
     const createdAt = moment(selectedTicket.value.created_at);
     events.push({
@@ -239,7 +255,6 @@ const timelineEvents = computed(() => {
     });
   }
 
-  // Format Started At
   if (selectedTicket.value.started_at) {
     const startedAt = moment(selectedTicket.value.started_at);
     events.push({
@@ -249,7 +264,6 @@ const timelineEvents = computed(() => {
     });
   }
 
-  // Format Completed At
   if (selectedTicket.value.completed_at) {
     const completedAt = moment(selectedTicket.value.completed_at);
     events.push({
@@ -259,19 +273,17 @@ const timelineEvents = computed(() => {
     });
   }
 
-  // Include Completed Time with Seconds
   if (selectedTicket.value.completed_time) {
     const completedTime = selectedTicket.value.completed_time;
     events.push({
       title: "Completed Time",
-      date: "", // You mentioned just HH:MM:SS format, so date can be empty
-      time: completedTime, // Assuming completed_time is in HH:MM:SS format
+      date: "",
+      time: completedTime,
     });
   }
 
   return events;
 });
-
 
 const difficultyOptions = [
   { value: "easy", label: "Easy", description: "below 4hrs" },
@@ -318,12 +330,10 @@ const fetchDevelopersAndTickets = () => {
 const openTicket = async (ticket) => {
   selectedTicket.value = ticket;
   isTicketOpen.value = true;
-
-  // Ensure any async operations are awaited properly
   await fetchDevelopersAndTickets();
 };
 
-const closeSlide = (ticket) => {
+const closeSlide = () => {
   isTicketOpen.value = false;
 };
 
@@ -341,19 +351,14 @@ const closeTicket = () => {
       const remarks = selectedTicket.value.remarks || "";
       const completed_at = moment().format("YYYY-MM-DD HH:mm:ss");
 
-      // Get the start time
       const started_at = moment(selectedTicket.value.started_at);
-
-      // Calculate the time difference
       const duration = moment.duration(moment(completed_at).diff(started_at));
       const hours = Math.floor(duration.asHours());
       const minutes = duration.minutes();
-      const seconds = duration.seconds();  // Include seconds
+      const seconds = duration.seconds();
 
-      // Format completed_time as HH:MM:SS
       const completed_time = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
-      // Update the ticket status
       ticketStore.updateTicketStatus(
         ticketId,
         "Closed",
@@ -363,7 +368,6 @@ const closeTicket = () => {
         completed_time
       )
       .then(() => {
-        // Update the developer's status to 'Available'
         if (selectedTicket.value.developer) {
           const developerId = selectedTicket.value.developer.id;
           return developerStore.setUpdateDeveloper({
@@ -373,7 +377,6 @@ const closeTicket = () => {
         }
       })
       .then(() => {
-        // Refresh the list of tickets and developers
         fetchDevelopersAndTickets();
         isTicketOpen.value = false;
       })
@@ -383,8 +386,6 @@ const closeTicket = () => {
     }
   });
 };
-
-
 
 const deleteTicket = (ticketId) => {
   ticketStore
@@ -399,41 +400,45 @@ const deleteTicket = (ticketId) => {
 
 const startTicket = () => {
   if (selectedTicket.value && selectedTicket.value.status === "Active") {
-    const currentTime = moment().format("YYYY-MM-DD HH:mm:ss"); // Get current time
+    const currentTime = moment().format("YYYY-MM-DD HH:mm:ss");
 
-    // Update ticket status to "On-going"
     ticketStore
       .updateTicketStatus(
         selectedTicket.value.id,
         "On-going",
         "",
-        currentTime // Send started_at to API
+        currentTime
       )
       .then(() => {
-        // Prepare data for updating developer's status
-        const developerId = selectedTicket.value.developer.id; // Assuming the developer ID is part of the selected ticket
-
-        // Update the developer's status to "Busy"
+        const developerId = selectedTicket.value.developer.id;
         return developerStore.setUpdateDeveloper({
           id: developerId,
           status: "Busy",
         });
       })
       .then(() => {
-        // Update the tickets list locally
         const index = tickets.value.findIndex(
           (ticket) => ticket.id === selectedTicket.value.id
         );
         if (index !== -1) {
-          tickets.value[index] = { ...selectedTicket.value }; // Update the specific ticket
+          tickets.value[index] = { ...selectedTicket.value };
         }
-        fetchDevelopersAndTickets(); // Refresh the ticket list
-        isTicketOpen.value = false; // Close the ticket view
+        fetchDevelopersAndTickets();
+        isTicketOpen.value = false;
       })
       .catch((error) => {
         console.error("Failed to update status:", error);
       });
   }
+};
+
+const openImageModal = (imageSrc) => {
+  modalImageSrc.value = imageSrc;
+  isImageModalOpen.value = true;
+};
+
+const closeImageModal = () => {
+  isImageModalOpen.value = false;
 };
 
 onMounted(fetchDevelopersAndTickets);
@@ -449,5 +454,38 @@ onMounted(fetchDevelopersAndTickets);
 }
 .slide-leave-to {
   transform: translateX(100%);
+}
+
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  position: relative;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 90vw; /* Increased max-width to 90% of viewport width */
+  max-height: 90vh; /* Increased max-height to 90% of viewport height */
+  overflow: hidden;
+}
+
+.close {
+  top: 0;
+  right: 0;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: red;
+}
+
+.modal-content img {
+  width: 100%;
+  height: auto;
+  object-fit: contain; /* Ensures image fits within modal while preserving aspect ratio */
 }
 </style>
