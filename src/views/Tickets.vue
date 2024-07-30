@@ -68,7 +68,7 @@
               </p>
             </div>
 
-            <p class="text-gray-600">{{ ticket.description }}</p>
+            <p class="text-gray-600">{{ ticket.system.system }}</p>
             <button class="text-blue-500 mt-2" @click="openTicket(ticket)">Open</button>
           </div>
         </div>
@@ -264,15 +264,14 @@ const timelineEvents = computed(() => {
     const completedTime = selectedTicket.value.completed_time;
     events.push({
       title: "Completed Time",
-      date: "", // You mentioned just HH:MM format, so date can be empty
+      date: "", // You mentioned just HH:MM:SS format, so date can be empty
       time: completedTime, // Assuming completed_time is in HH:MM:SS format
     });
   }
 
-  // Add additional events as needed
-
   return events;
 });
+
 
 const difficultyOptions = [
   { value: "easy", label: "Easy", description: "below 4hrs" },
@@ -349,9 +348,10 @@ const closeTicket = () => {
       const duration = moment.duration(moment(completed_at).diff(started_at));
       const hours = Math.floor(duration.asHours());
       const minutes = duration.minutes();
+      const seconds = duration.seconds();  // Include seconds
 
-      // Format completed_time as HH:MM
-      const completed_time = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+      // Format completed_time as HH:MM:SS
+      const completed_time = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
       // Update the ticket status
       ticketStore.updateTicketStatus(
@@ -383,6 +383,7 @@ const closeTicket = () => {
     }
   });
 };
+
 
 
 const deleteTicket = (ticketId) => {
