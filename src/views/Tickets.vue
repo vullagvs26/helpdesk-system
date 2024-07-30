@@ -338,53 +338,67 @@ const closeSlide = () => {
 };
 
 const closeTicket = () => {
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You will lose any unsaved changes!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Yes, close it!",
-    cancelButtonText: "No, keep it open",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const ticketId = selectedTicket.value.id;
-      const remarks = selectedTicket.value.remarks || "";
-      const completed_at = moment().format("YYYY-MM-DD HH:mm:ss");
+  const loggedInUserEmail = localStorage.getItem("email"); // Retrieve the logged-in user's email
 
-      const started_at = moment(selectedTicket.value.started_at);
-      const duration = moment.duration(moment(completed_at).diff(started_at));
-      const hours = Math.floor(duration.asHours());
-      const minutes = duration.minutes();
-      const seconds = duration.seconds();
+  if (selectedTicket.value && loggedInUserEmail === selectedTicket.value.developer.assigned_to) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will lose any unsaved changes!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: "Yes, close it!",
+      cancelButtonText: "No, keep it open",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const ticketId = selectedTicket.value.id;
+        const remarks = selectedTicket.value.remarks || "";
+        const completed_at = moment().format("YYYY-MM-DD HH:mm:ss");
 
-      const completed_time = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+        const started_at = moment(selectedTicket.value.started_at);
+        const duration = moment.duration(moment(completed_at).diff(started_at));
+        const hours = Math.floor(duration.asHours());
+        const minutes = duration.minutes();
+        const seconds = duration.seconds();
 
-      ticketStore.updateTicketStatus(
-        ticketId,
-        "Closed",
-        remarks,
-        started_at.format("YYYY-MM-DD HH:mm:ss"),
-        completed_at,
-        completed_time
-      )
-      .then(() => {
-        if (selectedTicket.value.developer) {
-          const developerId = selectedTicket.value.developer.id;
-          return developerStore.setUpdateDeveloper({
-            id: developerId,
-            status: "Available",
-          });
-        }
-      })
-      .then(() => {
-        fetchDevelopersAndTickets();
-        isTicketOpen.value = false;
-      })
-      .catch((error) => {
-        console.error("Failed to update ticket or developer status:", error);
-      });
-    }
-  });
+        const completed_time = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+        ticketStore.updateTicketStatus(
+          ticketId,
+          "Closed",
+          remarks,
+          started_at.format("YYYY-MM-DD HH:mm:ss"),
+          completed_at,
+          completed_time
+        )
+        .then(() => {
+          if (selectedTicket.value.developer) {
+            const developerId = selectedTicket.value.developer.id;
+            return developerStore.setUpdateDeveloper({
+              id: developerId,
+              status: "Available",
+            });
+          }
+        })
+        .then(() => {
+          fetchDevelopersAndTickets();
+          isTicketOpen.value = false;
+        })
+        .catch((error) => {
+          console.error("Failed to update ticket or developer status:", error);
+        });
+      }
+    });
+  } else {
+    Swal.fire({
+      icon: 'error',
+      title: 'Unauthorized',
+      text: 'You are not assigned to this ticket.',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'OK'
+    });
+  }
 };
 
 const deleteTicket = (ticketId) => {
@@ -399,38 +413,51 @@ const deleteTicket = (ticketId) => {
 };
 
 const startTicket = () => {
-  if (selectedTicket.value && selectedTicket.value.status === "Active") {
-    const currentTime = moment().format("YYYY-MM-DD HH:mm:ss");
+  const loggedInUserEmail = localStorage.getItem("email"); // Retrieve the logged-in user's email
 
-    ticketStore
-      .updateTicketStatus(
-        selectedTicket.value.id,
-        "On-going",
-        "",
-        currentTime
-      )
-      .then(() => {
-        const developerId = selectedTicket.value.developer.id;
-        return developerStore.setUpdateDeveloper({
-          id: developerId,
-          status: "Busy",
+  if (selectedTicket.value && selectedTicket.value.status === "Active") {
+    if (loggedInUserEmail === selectedTicket.value.developer.assigned_to) {
+      const currentTime = moment().format("YYYY-MM-DD HH:mm:ss");
+
+      ticketStore
+        .updateTicketStatus(
+          selectedTicket.value.id,
+          "On-going",
+          "",
+          currentTime
+        )
+        .then(() => {
+          const developerId = selectedTicket.value.developer.id;
+          return developerStore.setUpdateDeveloper({
+            id: developerId,
+            status: "Busy",
+          });
+        })
+        .then(() => {
+          const index = tickets.value.findIndex(
+            (ticket) => ticket.id === selectedTicket.value.id
+          );
+          if (index !== -1) {
+            tickets.value[index] = { ...selectedTicket.value };
+          }
+          fetchDevelopersAndTickets();
+          isTicketOpen.value = false;
+        })
+        .catch((error) => {
+          console.error("Failed to update status:", error);
         });
-      })
-      .then(() => {
-        const index = tickets.value.findIndex(
-          (ticket) => ticket.id === selectedTicket.value.id
-        );
-        if (index !== -1) {
-          tickets.value[index] = { ...selectedTicket.value };
-        }
-        fetchDevelopersAndTickets();
-        isTicketOpen.value = false;
-      })
-      .catch((error) => {
-        console.error("Failed to update status:", error);
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Unauthorized',
+        text: 'You are not assigned to this ticket.',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
       });
+    }
   }
 };
+
 
 const openImageModal = (imageSrc) => {
   modalImageSrc.value = imageSrc;

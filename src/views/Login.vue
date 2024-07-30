@@ -61,8 +61,8 @@ const handleLogin = async () => {
       }
     );
 
-    // Save the token to local storage
-    localStorage.setItem("token", response.data.token);
+ localStorage.setItem("token", response.data.token);
+    localStorage.setItem("email", email.value); // Store email in local storage
 
     // Call the login function from useAuth
     login(response.data.token);
