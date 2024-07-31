@@ -34,24 +34,20 @@
 
       <div class="flex flex-wrap gap-4 mb-8">
         <div
-          class="bg-white rounded-lg shadow-lg p-6 flex-1 min-w-[300px] h-[500px] flex items-center justify-center"
+          class="chart-container bg-white rounded-lg shadow-lg p-6 flex-1 min-w-[300px] h-[500px] flex flex-col items-center justify-center"
         >
-          <div class="w-800px">
-            <h3 class="text-lg font-medium text-gray-700 mb-4 text-center">
-              Tickets by Priority
-            </h3>
-            <canvas id="ticketsByPriority"></canvas>
-          </div>
+          <h3 class="text-lg font-medium text-gray-700 mb-4 text-center">
+            Tickets by Priority
+          </h3>
+          <canvas id="ticketsByPriority" class="chart-canvas"></canvas>
         </div>
         <div
-          class="bg-white rounded-lg shadow-lg p-6 flex-1 min-w-[250px] h-[500px] flex items-center justify-center"
+          class="chart-container bg-white rounded-lg shadow-lg p-6 flex-1 min-w-[250px] h-[500px] flex flex-col items-center justify-center"
         >
-          <div class="w-full">
-            <h3 class="text-lg font-medium text-gray-700 mb-4 text-center">
-              Tickets by Type
-            </h3>
-            <canvas id="ticketsByType"></canvas>
-          </div>
+          <h3 class="text-lg font-medium text-gray-700 mb-4 text-center">
+            Tickets by Type
+          </h3>
+          <canvas id="ticketsByType" class="chart-canvas"></canvas>
         </div>
       </div>
     </div>
@@ -59,9 +55,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useTicketStore } from "@/modules/ticket";
-import Chart from "chart.js/auto";
+import { ref, onMounted, nextTick } from 'vue';
+import { useTicketStore } from '@/modules/ticket';
+import Chart from 'chart.js/auto';
 
 const ticketStore = useTicketStore();
 
@@ -73,70 +69,90 @@ const loadTickets = async () => {
   try {
     await ticketStore.setLoadTicket();
     updateTicketCounts();
-    renderCharts();
+    await nextTick(); // Ensure the DOM has been updated
+    setTimeout(() => {
+      renderCharts(); // Delay to ensure DOM and charts are updated
+    }, 100); // Adjust if necessary
   } catch (err) {
-    console.error("Failed to load tickets", err);
+    console.error('Failed to load tickets', err);
   }
 };
 
 const updateTicketCounts = () => {
   activeTickets.value = ticketStore.items.filter(
-    (ticket) => ticket.status === "Active"
+    (ticket) => ticket.status === 'Active'
   ).length;
   ongoingTickets.value = ticketStore.items.filter(
-    (ticket) => ticket.status === "On-going"
+    (ticket) => ticket.status === 'On-going'
   ).length;
   closedTickets.value = ticketStore.items.filter(
-    (ticket) => ticket.status === "Closed"
+    (ticket) => ticket.status === 'Closed'
   ).length;
 };
 
 const renderCharts = () => {
-  // Tickets by Priority
-  const ticketPriorities = ["Low", "Medium", "High"];
-  const ticketsByPriorityData = ticketPriorities.map((priority) => {
-    return ticketStore.items.filter((ticket) => ticket.impact === priority)
-      .length;
-  });
+  console.log('Rendering charts...');
 
-  const ticketsByPriorityCtx = document
-    .getElementById("ticketsByPriority")
-    .getContext("2d");
-  new Chart(ticketsByPriorityCtx, {
-    type: "doughnut",
-    data: {
-      labels: ticketPriorities,
-      datasets: [
-        {
-          data: ticketsByPriorityData,
-          backgroundColor: ["#36A2EB", "#FFCE56", "#FF6384"],
-        },
-      ],
-    },
-  });
+  const ticketsByPriorityCanvas = document.getElementById('ticketsByPriority');
+  const ticketsByTypeCanvas = document.getElementById('ticketsByType');
 
-  // Tickets by Type
-  const ticketTypes = ticketStore.items.reduce((acc, ticket) => {
-    acc[ticket.type_of_ticket] = (acc[ticket.type_of_ticket] || 0) + 1;
-    return acc;
-  }, {});
+  if (ticketsByPriorityCanvas && ticketsByTypeCanvas) {
+    console.log('Canvas elements found.');
 
-  const ticketsByTypeCtx = document
-    .getElementById("ticketsByType")
-    .getContext("2d");
-  new Chart(ticketsByTypeCtx, {
-    type: "bar",
-    data: {
-      labels: Object.keys(ticketTypes),
-      datasets: [
-        {
-          label: "Number of Tickets",
-          data: Object.values(ticketTypes),
-          backgroundColor: ["#36A2EB", "#FF6384", "#FFCE56"],
-        },
-      ],
-    },
-  });
+    const ticketPriorities = ['Low', 'Medium', 'High'];
+    const ticketsByPriorityData = ticketPriorities.map((priority) => {
+      return ticketStore.items.filter((ticket) => ticket.impact === priority)
+        .length;
+    });
+
+    console.log('Tickets by Priority Data:', ticketsByPriorityData);
+
+    const ticketsByPriorityCtx = ticketsByPriorityCanvas.getContext('2d');
+    new Chart(ticketsByPriorityCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ticketPriorities,
+        datasets: [
+          {
+            data: ticketsByPriorityData,
+            backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384'],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+      },
+    });
+
+    const ticketTypes = ticketStore.items.reduce((acc, ticket) => {
+      acc[ticket.type_of_ticket] = (acc[ticket.type_of_ticket] || 0) + 1;
+      return acc;
+    }, {});
+
+    console.log('Tickets by Type Data:', ticketTypes);
+
+    const ticketsByTypeCtx = ticketsByTypeCanvas.getContext('2d');
+    new Chart(ticketsByTypeCtx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(ticketTypes),
+        datasets: [
+          {
+            label: 'Number of Tickets',
+            data: Object.values(ticketTypes),
+            backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+      },
+    });
+  } else {
+    console.error('Canvas elements not found.');
+  }
 };
 
 onMounted(loadTickets);
@@ -144,7 +160,7 @@ onMounted(loadTickets);
 
 <style scoped>
 body {
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .dashboard-wrapper {
@@ -173,5 +189,18 @@ body {
 
 .text-gray-700 {
   color: #4a5568;
+}
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.chart-canvas {
+  width: 90% !important;
+  height: 90% !important;
 }
 </style>
