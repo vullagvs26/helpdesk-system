@@ -188,7 +188,7 @@ onMounted(() => {
         <div class="grid grid-cols-1 gap-4">
           <!-- Full Name Field -->
           <div class="flex flex-col">
-            <label for="name" class="mb-1 font-semibold">Your Name</label>
+            <label for="name" class="mb-1 font-semibold">Client Name</label>
             <input
               type="text"
               id="name"
@@ -202,7 +202,7 @@ onMounted(() => {
           </div>
           <!-- Email Field -->
           <div class="flex flex-col">
-            <label for="email" class="mb-1 font-semibold">Your Email</label>
+            <label for="email" class="mb-1 font-semibold">Client Email</label>
             <input
               type="email"
               id="email"

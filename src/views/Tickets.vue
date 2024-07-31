@@ -11,7 +11,7 @@
           class="flex flex-col items-center bg-white shadow-md rounded-lg p-4"
         >
           <img
-            :src="developer.profile_photo"
+            :src="developer.profile_photo || defaultProfilePhoto"
             alt="Developer Image"
             class="w-16 h-16 rounded-full mb-2"
             @click="openImageModal(developer.profile_photo)"
@@ -213,6 +213,7 @@ import { useDeveloperStore } from "@/modules/developer.js";
 import { useTicketStore } from "@/modules/ticket.js";
 import moment from "moment";
 import Swal from "sweetalert2";
+import defaultProfilePhoto from "@/assets/image/default-profile.png";
 
 library.add(faTrashAlt, faSearch, faTimes, faPlay);
 
