@@ -24,7 +24,7 @@
                 Edit
               </li>
               <li
-                @click="deleteDeveloper(developer.id)"
+                @click="confirmDeleteDeveloper(developer.id)"
                 class="px-4 py-2 hover:bg-red-100 hover:text-red-600 cursor-pointer"
               >
                 Delete
@@ -94,37 +94,68 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
 import { useDeveloperStore } from "@/modules/developer.js";
-import { useTicketStore } from "@/modules/ticket.js";
 import defaultProfilePhoto from "@/assets/image/default-profile.png";
+import Toastify from "toastify-js";
+import "toastify-js/src/toastify.css";
+import Swal from "sweetalert2";
 
 library.add(faEllipsisVertical);
 
 const developerStore = useDeveloperStore();
-const ticketStore = useTicketStore();
 const developers = ref(null);
-const tickets = ref([]);
-
-const showModal = ref(false);
 const showEditModal = ref(false);
 const activeDropdown = ref(null);
 const selectedDeveloper = ref(null);
 
+// Show toast notifications
+const showToast = (message, backgroundColor) => {
+  Toastify({
+    text: message,
+    duration: 3000,
+    close: true,
+    gravity: "top",
+    position: "right",
+    style: { background: backgroundColor },
+    stopOnFocus: true,
+  }).showToast();
+};
+
+// Edit Developer
 const editDeveloper = (developer) => {
   selectedDeveloper.value = { ...developer };
   showEditModal.value = true;
 };
 
+// Save Edited Developer
 const saveEditedDeveloper = (payload) => {
   developerStore
     .setUpdateDeveloper(payload)
-    .then((response) => {
-      console.log("API Response:", response);
+    .then(() => {
       closeEditModal();
       fetchDevelopers();
+      showToast("Developer edited successfully!", "#2563EB");
     })
     .catch((error) => {
       console.error("Failed to save edited developer:", error);
     });
+};
+
+// Confirm and delete Developer
+const confirmDeleteDeveloper = (developerId) => {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      deleteDeveloper(developerId);
+    }
+  });
 };
 
 const deleteDeveloper = (developerId) => {
@@ -132,12 +163,14 @@ const deleteDeveloper = (developerId) => {
     .setDeleteDeveloper(developerId)
     .then(() => {
       fetchDevelopers();
+      showToast("Developer deleted successfully!", "#dc3545");
     })
     .catch((error) => {
       console.error(`Failed to delete developer with ID ${developerId}:`, error);
     });
 };
 
+// Open and close edit modal
 const openEditModal = () => {
   showEditModal.value = true;
 };
@@ -147,10 +180,12 @@ const closeEditModal = () => {
   selectedDeveloper.value = null;
 };
 
+// Toggle Dropdown
 const toggleDropdown = (id) => {
   activeDropdown.value = activeDropdown.value === id ? null : id;
 };
 
+// Fetch Developers
 const fetchDevelopers = () => {
   developerStore.setLoadDeveloper().then(() => {
     developers.value = developerStore.getLoadDeveloper;

@@ -214,6 +214,8 @@ import { useTicketStore } from "@/modules/ticket.js";
 import moment from "moment";
 import Swal from "sweetalert2";
 import defaultProfilePhoto from "@/assets/image/default-profile.png";
+import Toastify from "toastify-js";
+import "toastify-js/src/toastify.css";
 
 library.add(faTrashAlt, faSearch, faTimes, faPlay);
 
@@ -338,6 +340,18 @@ const closeSlide = () => {
   isTicketOpen.value = false;
 };
 
+const showToast = (message, backgroundColor) => {
+  Toastify({
+    text: message,
+    duration: 3000,
+    close: true,
+    gravity: "top",
+    position: "right",
+    style: { background: backgroundColor },
+    stopOnFocus: true,
+  }).showToast();
+};
+
 const closeTicket = () => {
   const loggedInUserEmail = localStorage.getItem("email"); // Retrieve the logged-in user's email
 
@@ -385,6 +399,7 @@ const closeTicket = () => {
         .then(() => {
           fetchDevelopersAndTickets();
           isTicketOpen.value = false;
+           showToast("Ticket has been closed successfully!", "#28a745");
         })
         .catch((error) => {
           console.error("Failed to update ticket or developer status:", error);
@@ -443,6 +458,7 @@ const startTicket = () => {
           }
           fetchDevelopersAndTickets();
           isTicketOpen.value = false;
+          showToast("Ticket has been started successfully!", "#28a745");
         })
         .catch((error) => {
           console.error("Failed to update status:", error);

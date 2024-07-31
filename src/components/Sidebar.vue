@@ -11,6 +11,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import useAuth from '@/modules/auth';
 import { useRouter } from 'vue-router';
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css'; // Import Toastify CSS
 
 library.add(faTicket, faSignOutAlt, faSquarePlus, faTableColumns, faUser, faDesktop);
 
@@ -18,8 +20,21 @@ const { state, logout } = useAuth();
 const router = useRouter();
 
 const handleLogout = () => {
-  logout(); // Update authentication state and redirect
-  router.push('/login'); // Ensure redirection after state update
+  logout(); // Update authentication state
+
+  // Show success toast
+  Toastify({
+    text: "Logged out successfully!",
+    duration: 3000,
+    close: true,
+    gravity: "top",
+    position: "right",
+    backgroundColor: "#00BEA4",
+    stopOnFocus: true,
+  }).showToast();
+
+  // Redirect to login page
+  router.push('/login');
 };
 </script>
 

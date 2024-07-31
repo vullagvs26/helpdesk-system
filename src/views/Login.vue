@@ -9,7 +9,7 @@
     </div>
 
     <!-- Right side with login form and gradient -->
-<div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gradient-to-b from-[#00BEA4] to-[#E0F8F4]">
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gradient-to-b from-[#00BEA4] to-[#E0F8F4]">
       <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
         <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
         <form @submit.prevent="handleLogin">
@@ -55,6 +55,8 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 import useAuth from '@/modules/auth';
 import loginImage from '@/assets/image/login.jpg'; // Import image
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css'; // Import the CSS
 
 const email = ref('');
 const password = ref('');
@@ -62,6 +64,19 @@ const router = useRouter();
 const { login } = useAuth();
 
 const handleLogin = async () => {
+  // Show loading toast
+  Toastify({
+    text: "Logging in...",
+    duration: 3000,
+    close: true,
+    gravity: "top",
+    position: "right",
+    style: {
+      background: "#00BEA4"
+    },
+    stopOnFocus: true,
+  }).showToast();
+
   try {
     const response = await axios.post('/login', {
       email: email.value,
@@ -73,13 +88,34 @@ const handleLogin = async () => {
 
     login(response.data.token);
     router.push('/Dashboard');
+
+    // Show success toast
+    Toastify({
+      text: "Login successful!",
+      duration: 3000,
+      close: true,
+      gravity: "top",
+      position: "right",
+      style: {
+        background: "#28a745"
+      },
+      stopOnFocus: true,
+    }).showToast();
   } catch (error) {
     console.error('Login failed:', error);
-    alert('Invalid email or password');
+
+    // Show error toast
+    Toastify({
+      text: "Invalid email or password",
+      duration: 3000,
+      close: true,
+      gravity: "top",
+      position: "right",
+      style: {
+        background: "#dc3545"
+      },
+      stopOnFocus: true,
+    }).showToast();
   }
 };
 </script>
-
-<style scoped>
-/* Add any additional styling if needed */
-</style>

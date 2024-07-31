@@ -1,8 +1,169 @@
+<template>
+  <div class="p-6 h-full">
+    <div class="flex justify-between">
+      <h2 class="text-xl font-bold text-blue-500 mb-4 mt-4">Create a new ticket</h2>
+      <button
+        type="submit"
+        class="mt-4 mb-4 bg-blue-500 text-white py-2 px-4 rounded-full"
+        @click="submitTicketForm"
+      >
+        Send Request
+      </button>
+    </div>
+    <div class="bg-white border shadow-lg rounded-lg p-6 overflow-auto h-5/6">
+      <form @submit.prevent="submitTicketForm">
+        <div class="grid grid-cols-1 gap-4">
+          <!-- Full Name Field -->
+          <div class="flex flex-col">
+            <label for="name" class="mb-1 font-semibold">Client Name</label>
+            <input
+              type="text"
+              id="name"
+              v-model="ticketForm.full_name"
+              class="border border-gray-300 p-2 rounded"
+              placeholder="(Ex: Vullag, Vincent)"
+            />
+            <span v-if="errors.full_name" class="text-red-500">{{ errors.full_name[0] }}</span>
+          </div>
+          <!-- Email Field -->
+          <div class="flex flex-col">
+            <label for="email" class="mb-1 font-semibold">Client Email</label>
+            <input
+              type="email"
+              id="email"
+              v-model="ticketForm.email"
+              class="border border-gray-300 p-2 rounded"
+              placeholder="Input Your Email"
+            />
+            <span v-if="errors.email" class="text-red-500">{{ errors.email[0] }}</span>
+          </div>
+          <!-- Type of Ticket Field -->
+          <div class="flex flex-col">
+            <label for="typeOfTicket" class="mb-1 font-semibold">Type of Ticket</label>
+            <select
+              id="typeOfTicket"
+              v-model="ticketForm.type_of_ticket"
+              class="border border-gray-300 p-2 rounded"
+            >
+              <option value="" disabled>Select Type of Ticket</option>
+              <option v-for="type in ticketTypes" :key="type.id" :value="type.name">
+                {{ type.name }}
+              </option>
+            </select>
+            <span v-if="errors.type_of_ticket" class="text-red-500">{{ errors.type_of_ticket[0] }}</span>
+          </div>
+          <!-- Impact Field -->
+          <div class="flex flex-col">
+            <label for="impact" class="mb-1 font-semibold">Impact</label>
+            <select
+              id="impact"
+              v-model="ticketForm.impact"
+              class="border border-gray-300 p-2 rounded"
+            >
+              <option value="" disabled>Select Impact</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+            <span v-if="errors.impact" class="text-red-500">{{ errors.impact[0] }}</span>
+          </div>
+          <!-- Status Field -->
+          <div class="flex flex-col">
+            <label for="status" class="mb-1 font-semibold">Status</label>
+            <input
+              type="text"
+              id="status"
+              v-model="ticketForm.status"
+              class="border border-gray-300 p-2 rounded"
+              placeholder="Active"
+              disabled
+            />
+            <span v-if="errors.status" class="text-red-500">{{ errors.status[0] }}</span>
+          </div>
+          <!-- System Name Field -->
+          <div class="flex flex-col">
+            <label for="systemName" class="mb-1 font-semibold">System Name</label>
+            <select
+              id="systemName"
+              v-model="ticketForm.system_name_id"
+              class="border border-gray-300 p-2 rounded"
+            >
+              <option value="" disabled>Select System</option>
+              <option
+                v-for="(system, i) in systemStore.getLoadSystem"
+                :key="i"
+                :value="system.id"
+              >
+                {{ system.system_name }}
+              </option>
+            </select>
+            <span v-if="errors.system_name_id" class="text-red-500">{{ errors.system_name_id[0] }}</span>
+          </div>
+          <!-- Assigned To Field -->
+          <div class="flex flex-col">
+            <label for="assignedTo" class="mb-1 font-semibold">Assigned To</label>
+            <select
+              id="assignedTo"
+              v-model="ticketForm.assigned_to_id"
+              class="border border-gray-300 p-2 rounded"
+            >
+              <option value="" disabled>Select Developer</option>
+              <option
+                v-for="(developer, i) in developerStore.getLoadDeveloper"
+                :key="i"
+                :value="developer.id"
+              >
+                {{ developer.email }}
+              </option>
+            </select>
+            <span v-if="errors.assigned_to_id" class="text-red-500">{{ errors.assigned_to_id[0] }}</span>
+          </div>
+          <!-- Description Field -->
+          <div class="flex flex-col">
+            <label for="description" class="mb-1 font-semibold">Short Description</label>
+            <textarea
+              id="description"
+              v-model="ticketForm.description"
+              class="border border-gray-300 p-2 rounded"
+              rows="4"
+              placeholder="Describe your request or error encountered"
+            ></textarea>
+            <span v-if="errors.description" class="text-red-500">{{ errors.description[0] }}</span>
+          </div>
+          <!-- Image Upload Field -->
+          <div class="flex flex-col">
+            <label for="image" class="mb-1 font-semibold">Upload Image</label>
+            <input
+              type="file"
+              id="image"
+              @change="handleImageUpload"
+              class="border border-gray-300 p-2 rounded"
+            />
+            <span v-if="errors.image" class="text-red-500">{{ errors.image[0] }}</span>
+          </div>
+          <!-- Preview Uploaded Images -->
+          <div class="mt-4 flex space-x-2">
+            <img
+              v-for="(file, index) in imagePreviews"
+              :key="index"
+              :src="file.url"
+              class="w-26 h-24"
+              :alt="file.name"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
 <script setup>
 import { ref, onMounted } from "vue";
 import { useTicketStore } from "@/modules/ticket.js";
 import { useSystemStore } from "@/modules/system.js";
 import { useDeveloperStore } from "@/modules/developer.js";
+import Toastify from "toastify-js";
+import "toastify-js/src/toastify.css";
 
 // Data
 const ticketStore = useTicketStore();
@@ -105,10 +266,24 @@ const validateForm = () => {
   return Object.keys(errors.value).length === 0;
 };
 
+// Show toast notifications
+const showToast = (message, backgroundColor) => {
+  Toastify({
+    text: message,
+    duration: 3000,
+    close: true,
+    gravity: "top",
+    position: "right",
+    style: { background: backgroundColor },
+    stopOnFocus: true,
+  }).showToast();
+};
+
 // Submit the form data
 const submitTicketForm = async () => {
   if (!validateForm()) {
     console.error("Form validation failed:", errors.value);
+    showToast("Please fill up all the required field", "#dc3545");
     return;
   }
 
@@ -149,16 +324,19 @@ const submitTicketForm = async () => {
     const res = await ticketStore.setStoreTicket(formData, payload);
     if (res.status === "success") {
       await ticketStore.setLoadTicket();
-      alert(
-        `Ticket created successfully! Your ticket number is ${ticketForm.value.ticket_no}`
+      showToast(
+        `Ticket created successfully!`,
+        "#28a745"
       );
       clearTicketForm();
     } else {
       errors.value = res.error || {};
+      showToast("Failed to create ticket", "#dc3545");
       console.error("Form submission error:", res.error);
     }
   } catch (error) {
     console.error("Submission failed:", error);
+    showToast("Submission failed. Please try again.", "#dc3545");
   }
 };
 
@@ -170,177 +348,6 @@ onMounted(() => {
   developerStore.setLoadDeveloper();
 });
 </script>
-
-<template>
-  <div class="p-6 h-full">
-    <div class="flex justify-between">
-      <h2 class="text-xl font-bold text-blue-500 mb-4 mt-4">Create a new ticket</h2>
-      <button
-        type="submit"
-        class="mt-4 mb-4 bg-blue-500 text-white py-2 px-4 rounded-full"
-        @click="submitTicketForm"
-      >
-        Send Request
-      </button>
-    </div>
-    <div class="bg-white border shadow-lg rounded-lg p-6 overflow-auto h-5/6">
-      <form @submit.prevent="submitTicketForm">
-        <div class="grid grid-cols-1 gap-4">
-          <!-- Full Name Field -->
-          <div class="flex flex-col">
-            <label for="name" class="mb-1 font-semibold">Client Name</label>
-            <input
-              type="text"
-              id="name"
-              v-model="ticketForm.full_name"
-              class="border border-gray-300 p-2 rounded"
-              placeholder="(Ex: Vullag, Vincent)"
-            />
-            <span v-if="errors.full_name" class="text-red-500">{{
-              errors.full_name[0]
-            }}</span>
-          </div>
-          <!-- Email Field -->
-          <div class="flex flex-col">
-            <label for="email" class="mb-1 font-semibold">Client Email</label>
-            <input
-              type="email"
-              id="email"
-              v-model="ticketForm.email"
-              class="border border-gray-300 p-2 rounded"
-              placeholder="Input Your Email"
-            />
-            <span v-if="errors.email" class="text-red-500">{{ errors.email[0] }}</span>
-          </div>
-          <!-- Type of Ticket Field -->
-          <div class="flex flex-col">
-            <label for="typeOfTicket" class="mb-1 font-semibold">Type of Ticket</label>
-            <select
-              id="typeOfTicket"
-              v-model="ticketForm.type_of_ticket"
-              class="border border-gray-300 p-2 rounded"
-            >
-              <option value="" disabled>Select Type of Ticket</option>
-              <option v-for="type in ticketTypes" :key="type.id" :value="type.name">
-                {{ type.name }}
-              </option>
-            </select>
-            <span v-if="errors.type_of_ticket" class="text-red-500">{{
-              errors.type_of_ticket[0]
-            }}</span>
-          </div>
-          <!-- Impact Field -->
-          <div class="flex flex-col">
-            <label for="impact" class="mb-1 font-semibold">Impact</label>
-            <select
-              id="impact"
-              v-model="ticketForm.impact"
-              class="border border-gray-300 p-2 rounded"
-            >
-              <option value="" disabled>Select Impact</option>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-            </select>
-            <span v-if="errors.impact" class="text-red-500">{{ errors.impact[0] }}</span>
-          </div>
-          <!-- Status Field -->
-          <div class="flex flex-col">
-            <label for="status" class="mb-1 font-semibold">Status</label>
-            <input
-              type="text"
-              id="status"
-              v-model="ticketForm.status"
-              class="border border-gray-300 p-2 rounded"
-              placeholder="Active"
-              disabled
-            >
-              
-            </input>
-            <span v-if="errors.status" class="text-red-500">{{ errors.status[0] }}</span>
-          </div>
-          <!-- System Name Field -->
-          <div class="flex flex-col">
-            <label for="systemName" class="mb-1 font-semibold">System Name</label>
-            <select
-              id="systemName"
-              v-model="ticketForm.system_name_id"
-              class="border border-gray-300 p-2 rounded"
-            >
-              <option value="" disabled>Select System</option>
-              <option
-                v-for="(system, i) in systemStore.getLoadSystem"
-                :key="i"
-                :value="system.id"
-              >
-                {{ system.system_name }}
-              </option>
-            </select>
-            <span v-if="errors.system_name_id" class="text-red-500">{{
-              errors.system_name_id[0]
-            }}</span>
-          </div>
-          <!-- Assigned To Field -->
-          <div class="flex flex-col">
-            <label for="assignedTo" class="mb-1 font-semibold">Assigned To</label>
-            <select
-              id="assignedTo"
-              v-model="ticketForm.assigned_to_id"
-              class="border border-gray-300 p-2 rounded"
-            >
-              <option value="" disabled>Select Developer</option>
-              <option
-                v-for="(developer, i) in developerStore.getLoadDeveloper"
-                :key="i"
-                :value="developer.id"
-              >
-                {{ developer.email }}
-              </option>
-            </select>
-            <span v-if="errors.assigned_to_id" class="text-red-500">{{
-              errors.assigned_to_id[0]
-            }}</span>
-          </div>
-          <!-- Description Field -->
-          <div class="flex flex-col">
-            <label for="description" class="mb-1 font-semibold">Short Description</label>
-            <textarea
-              id="description"
-              v-model="ticketForm.description"
-              class="border border-gray-300 p-2 rounded"
-              rows="4"
-              placeholder="Describe your request or error encountered"
-            ></textarea>
-            <span v-if="errors.description" class="text-red-500">{{
-              errors.description[0]
-            }}</span>
-          </div>
-          <!-- Image Upload Field -->
-          <div class="flex flex-col">
-            <label for="image" class="mb-1 font-semibold">Upload Image</label>
-            <input
-              type="file"
-              id="image"
-              @change="handleImageUpload"
-              class="border border-gray-300 p-2 rounded"
-            />
-            <span v-if="errors.image" class="text-red-500">{{ errors.image[0] }}</span>
-          </div>
-          <!-- Preview Uploaded Images -->
-          <div class="mt-4 flex space-x-2">
-            <img
-              v-for="(file, index) in imagePreviews"
-              :key="index"
-              :src="file.url"
-              class="w-26 h-24"
-              :alt="file.name"
-            />
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-</template>
 
 <style scoped>
 /* Ensure the form content is scrollable */

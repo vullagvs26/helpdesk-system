@@ -67,7 +67,7 @@
                 <font-awesome-icon icon="edit" />
               </button>
               <button
-                @click="deleteSystem(system.id)"
+                @click="confirmDeleteSystem(system.id)"
                 class="text-red-600 hover:text-red-900"
               >
                 <font-awesome-icon icon="trash-alt" />
@@ -99,6 +99,9 @@ import { faPlus, faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import AddSystemModal from "@/components/AddSystemModal.vue";
 import EditSystemModal from "@/components/EditSystemModal.vue";
 import { useSystemStore } from "@/modules/system.js";
+import Swal from "sweetalert2";
+import Toastify from "toastify-js";
+import "toastify-js/src/toastify.css";
 
 library.add(faPlus, faEdit, faTrashAlt);
 
@@ -107,6 +110,19 @@ const showModal = ref(false);
 const systems = ref(null);
 const showEditModal = ref(false);
 const selectedSystem = ref(null);
+
+// Show toast notifications
+const showToast = (message, backgroundColor) => {
+  Toastify({
+    text: message,
+    duration: 3000,
+    close: true,
+    gravity: "top",
+    position: "right",
+    style: { background: backgroundColor },
+    stopOnFocus: true,
+  }).showToast();
+};
 
 // Method to open edit modal
 const editSystem = (system) => {
@@ -122,19 +138,19 @@ const closeEditModal = () => {
 
 // Method to update system after edit
 const updateSystem = (updatedSystem) => {
-  // Call your store action to update the system
   systemStore
     .setUpdateSystem(updatedSystem)
     .then(() => {
       closeEditModal();
       fetchSystems();
+      showToast("System edited successfully!", "#2563EB");
     })
     .catch((error) => {
       console.error("Failed to update system:", error);
     });
 };
 
-//open and close model
+// Open and close add modal
 const openModal = () => {
   showModal.value = true;
 };
@@ -149,10 +165,29 @@ const addNewSystem = (payload) => {
     .then(() => {
       closeModal();
       fetchSystems();
+       showToast("System added successfully!", "#28a745");
     })
     .catch((error) => {
       console.error("Failed to add new system:", error);
     });
+};
+
+// Confirm and delete system
+const confirmDeleteSystem = (systemId) => {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      deleteSystem(systemId);
+    }
+  });
 };
 
 const deleteSystem = (systemId) => {
@@ -160,6 +195,7 @@ const deleteSystem = (systemId) => {
     .setDeleteSystem(systemId)
     .then(() => {
       fetchSystems();
+      showToast("System deleted successfully!", "#dc3545");
     })
     .catch((error) => {
       console.error(`Failed to delete system with ID ${systemId}:`, error);

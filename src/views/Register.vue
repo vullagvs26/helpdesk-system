@@ -96,6 +96,9 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import registerImage from '@/assets/image/register.jpg'; // Import image
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
+
 
 const firstName = ref('');
 const lastName = ref('');
@@ -105,6 +108,19 @@ const description = ref('');
 const status = ref('Available');  // Default value, readonly
 const password = ref('');
 const router = useRouter();
+
+// Show toast notifications
+const showToast = (message, backgroundColor) => {
+  Toastify({
+    text: message,
+    duration: 3000,
+    close: true,
+    gravity: "top",
+    position: "right",
+    style: { background: backgroundColor },
+    stopOnFocus: true,
+  }).showToast();
+};
 
 const handleRegister = async () => {
   try {
@@ -117,12 +133,18 @@ const handleRegister = async () => {
       status: status.value,  // Will always be "Available"
       password: password.value,
     });
+        // Show success toast
+    showToast('Registration successful! Redirecting to login...', '#00BEA4');
 
-    // Redirect to login page
-    router.push('/login');
+       // Redirect to login page after short delay
+    setTimeout(() => {
+      router.push('/login');
+    }, 3000); // Delay to allow toast to be visible
   } catch (error) {
     console.error('Registration failed:', error);
-    alert('Registration failed');
+
+    // Show error toast
+    showToast('Registration failed. Please try again.', '#dc3545');
   }
 };
 </script>

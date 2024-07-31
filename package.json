@@ -17,6 +17,7 @@
     "moment": "^2.30.1",
     "pinia": "^2.1.7",
     "sweetalert2": "^11.12.2",
+    "toastify-js": "^1.12.0",
     "vue": "^3.4.29",
     "vue-router": "^4.4.0",
     "vue3-datepicker": "^0.4.0",
