@@ -7,13 +7,13 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faUser,
   faInfoCircle,
-  faBars, faTimes 
+  faBars, faTimes,faFileExport,  
 } from "@fortawesome/free-solid-svg-icons";
 import axios from 'axios'
 
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-library.add(faUser, faInfoCircle, faBars, faTimes );
+library.add(faUser, faInfoCircle, faBars, faTimes,faFileExport );
 
 
 

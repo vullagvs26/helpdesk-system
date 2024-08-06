@@ -2,19 +2,31 @@
   <div class="p-6">
     <h2 class="text-2xl font-semibold mb-4 text-blue-600">Manage Systems</h2>
 
-    <div class="flex justify-end mb-4">
-      <button
-        @click="openModal"
-        class="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center"
-      >
-        <font-awesome-icon icon="plus" class="mr-2" />
-        Add System
-      </button>
+    <div class="flex justify-end">
+      <div class="flex justify-end mb-4 mr-2">
+        <button
+          @click="exportSystems"
+          class="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700 transition-colors"
+        >
+          <font-awesome-icon icon="file-export" class="mr-2" />
+          Export Systems
+        </button>
+      </div>
+
+      <div class="flex justify-end mb-4">
+        <button
+          @click="openModal"
+          class="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-green-700 transition-colors"
+        >
+          <font-awesome-icon icon="plus" class="mr-2" />
+          Add System
+        </button>
+      </div>
     </div>
 
     <!-- Scrollable table container -->
     <div class="overflow-x-auto bg-white rounded-lg shadow-md">
-      <table class="min-w-full divide-y divide-gray-200">
+      <table class="min-w-full divide-gray-200">
         <thead class="bg-gray-50 sticky top-0 z-10">
           <tr>
             <th
@@ -102,6 +114,7 @@ import { useSystemStore } from "@/modules/system.js";
 import Swal from "sweetalert2";
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
+import axios from "axios";
 
 library.add(faPlus, faEdit, faTrashAlt);
 
@@ -110,6 +123,27 @@ const showModal = ref(false);
 const systems = ref(null);
 const showEditModal = ref(false);
 const selectedSystem = ref(null);
+
+//EXPORT
+const exportSystems = async () => {
+  try {
+    const response = await axios.get("/export", {
+      responseType: "blob", // Important for handling file downloads
+    });
+
+    // Create a blob URL and trigger download
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "systems.xlsx"); // You can change the filename if needed
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error("Export failed:", error);
+    showToast("Failed to export systems. Please try again.", "#dc3545");
+  }
+};
 
 // Show toast notifications
 const showToast = (message, backgroundColor) => {
@@ -165,7 +199,7 @@ const addNewSystem = (payload) => {
     .then(() => {
       closeModal();
       fetchSystems();
-       showToast("System added successfully!", "#28a745");
+      showToast("System added successfully!", "#28a745");
     })
     .catch((error) => {
       console.error("Failed to add new system:", error);
@@ -175,14 +209,14 @@ const addNewSystem = (payload) => {
 // Confirm and delete system
 const confirmDeleteSystem = (systemId) => {
   Swal.fire({
-    title: 'Are you sure?',
+    title: "Are you sure?",
     text: "You won't be able to revert this!",
-    icon: 'warning',
+    icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!',
-    cancelButtonText: 'No, cancel'
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+    cancelButtonText: "No, cancel",
   }).then((result) => {
     if (result.isConfirmed) {
       deleteSystem(systemId);

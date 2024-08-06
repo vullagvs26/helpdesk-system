@@ -18,6 +18,7 @@
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">Edit System</h3>
                 <div class="mt-2">
+                <div class="overflow-y-auto max-h-[500px]">
                   <div class="mb-4">
                     <label
                       class="block text-gray-700 text-sm font-bold mb-2"
@@ -28,6 +29,34 @@
                     <input
                       v-model="form.system_name"
                       id="editSystemName"
+                      type="text"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  </div>
+                  <div class="mb-4">
+                    <label
+                      class="block text-gray-700 text-sm font-bold mb-2"
+                      for="editCodeName"
+                    >
+                      Code Name
+                    </label>
+                    <input
+                      v-model="form.owner"
+                      id="editCodeName"
+                      type="text"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  </div>
+                   <div class="mb-4">
+                    <label
+                      class="block text-gray-700 text-sm font-bold mb-2"
+                      for="editOwner"
+                    >
+                     Owner
+                    </label>
+                    <input
+                      v-model="form.owner"
+                      id="editOwner"
                       type="text"
                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
@@ -89,6 +118,7 @@
                       <option value="Inactive">Inactive</option>
                     </select>
                   </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -129,6 +159,8 @@ const emit = defineEmits(["onClose", "onUpdate"]);
 
 const form = ref({
   system_name: "",
+  code_name: "",
+  owner: "",
   published_at: null,
   developed_by: "",
   description: "",
@@ -140,6 +172,8 @@ watch(
   (newValue) => {
     if (newValue) {
       form.value.system_name = newValue.system_name;
+      form.value.code_name = newValue.code_name;
+      form.value.owner = newValue.owner;
       form.value.published_at = newValue.published_at
         ? new Date(newValue.published_at)
         : null;
@@ -176,6 +210,8 @@ const close = () => {
 
 const resetForm = () => {
   form.value.system_name = "";
+  form.value.code_name = "";
+  form.value.owner = "";
   form.value.published_at = null;
   form.value.developed_by = "";
   form.value.description = "";
