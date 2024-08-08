@@ -218,20 +218,77 @@
                     <div class="mb-4">
                       <label
                         class="block text-gray-700 text-sm font-bold mb-2"
+                        for="database"
+                      >
+                        Database
+                      </label>
+                      <input
+                        v-model="form.database"
+                        @input="onInputChange"
+                        id="database"
+                        :class="{ 'border-red-500': formErrors.database && formTouched }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        list="database-options"
+                        placeholder="Select database"
+                      />
+
+                      <datalist id="database-options">
+                        <option value="MySQL">MySQL</option>
+                        <option value="Oracle">Oracle</option>
+                        <option value="PostgreSQL">PostgreSQL</option>
+                      </datalist>
+                      <p
+                        v-if="formErrors.database && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Database is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="support_section"
+                      >
+                        Support Section
+                      </label>
+                      <input
+                        v-model="form.support_section"
+                        @input="formTouched = true"
+                        id="support_section"
+                        type="text"
+                        :class="{
+                          'border-red-500': formErrors.support_section && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.support_section && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Support Section is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
                         for="supportDeveloper"
                       >
                         Support Developer
                       </label>
-                      <select
+                      <input
                         v-model="form.support_developer"
-                        @change="formTouched = true"
+                        @input="onInputChange"
                         id="supportDeveloper"
                         :class="{
                           'border-red-500': formErrors.support_developer && formTouched,
                         }"
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      >
-                        <option value="">Select a developer</option>
+                        list="support-developer-options"
+                        placeholder="Select a developer"
+                      />
+                      <datalist id="support-developer-options">
                         <option
                           v-for="(developer, i) in developerStore.getLoadDeveloper"
                           :key="i"
@@ -239,12 +296,509 @@
                         >
                           {{ developer.first_name }}
                         </option>
-                      </select>
+                      </datalist>
                       <p
                         v-if="formErrors.support_developer && formTouched"
                         class="text-red-500 text-xs italic mt-1"
                       >
                         Support Developer is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="supportPrimary"
+                      >
+                        Support Primary
+                      </label>
+                      <input
+                        v-model="form.support_primary"
+                        @input="onInputChange"
+                        id="supportPrimary"
+                        :class="{
+                          'border-red-500': formErrors.support_primary && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        list="support-primary-options"
+                        placeholder="Select a primary"
+                      />
+                      <datalist id="support-primary-options">
+                        <option
+                          v-for="(developer, i) in developerStore.getLoadDeveloper"
+                          :key="i"
+                          :value="developer.first_name.toString()"
+                        >
+                          {{ developer.first_name }}
+                        </option>
+                      </datalist>
+                      <p
+                        v-if="formErrors.support_primary && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Support Primary is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="supportSecondary"
+                      >
+                        Support Secondary
+                      </label>
+                      <input
+                        v-model="form.support_secondary"
+                        @input="onInputChange"
+                        id="supportSecondary"
+                        :class="{
+                          'border-red-500': formErrors.support_secondary && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        list="support-secondary-options"
+                        placeholder="Select a secondary"
+                      />
+                      <datalist id="support-secondary-options">
+                        <option
+                          v-for="(developer, i) in developerStore.getLoadDeveloper"
+                          :key="i"
+                          :value="developer.first_name.toString()"
+                        >
+                          {{ developer.first_name }}
+                        </option>
+                      </datalist>
+                      <p
+                        v-if="formErrors.support_secondary && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Support Secondary is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="supportTertiary"
+                      >
+                        Support Tertiary
+                      </label>
+                      <input
+                        v-model="form.support_tertiary"
+                        @input="onInputChange"
+                        id="supportTertiary"
+                        :class="{
+                          'border-red-500': formErrors.support_tertiary && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        list="support-tertiary-options"
+                        placeholder="Select a tertiary"
+                      />
+                      <datalist id="support-tertiary-options">
+                        <option
+                          v-for="(developer, i) in developerStore.getLoadDeveloper"
+                          :key="i"
+                          :value="developer.first_name.toString()"
+                        >
+                          {{ developer.first_name }}
+                        </option>
+                      </datalist>
+                      <p
+                        v-if="formErrors.support_tertiary && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Support Tertiary is required.
+                      </p>
+                    </div>
+
+                    <!-- Add Original Date -->
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="originalDate"
+                      >
+                        Original Date
+                      </label>
+                      <vue-datepicker
+                        v-model="form.original_date"
+                        @change="formTouched = true"
+                        id="originalDate"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.original_date && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Original Date is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="portalDate"
+                      >
+                        Portal Date
+                      </label>
+                      <vue-datepicker
+                        v-model="form.portal_date"
+                        @change="formTouched = true"
+                        id="portalDate"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.portal_date && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Portal Date is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="prodPath"
+                      >
+                        Production Path
+                      </label>
+                      <input
+                        v-model="form.prod_path"
+                        @input="formTouched = true"
+                        id="prodPath"
+                        type="text"
+                        :class="{ 'border-red-500': formErrors.prod_path && formTouched }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.code_name && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Production Path is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="prodWeb"
+                      >
+                        Production Webserver
+                      </label>
+                      <input
+                        v-model="form.prod_webserver"
+                        @input="formTouched = true"
+                        id="prodWeb"
+                        type="text"
+                        :class="{
+                          'border-red-500': formErrors.prod_webserver && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.prod_webserver && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Production Webserver is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="prodDatabase"
+                      >
+                        Production Database
+                      </label>
+                      <input
+                        v-model="form.prod_database"
+                        @input="formTouched = true"
+                        id="prodDatabase"
+                        type="text"
+                        :class="{
+                          'border-red-500': formErrors.prod_database && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.prod_database && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Production Database is required.
+                      </p>
+                    </div>
+
+                    <!-- New Development URL Field -->
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="devUrl"
+                      >
+                        Development URL
+                      </label>
+                      <input
+                        v-model="form.dev_url"
+                        @input="formTouched = true"
+                        id="devUrl"
+                        type="text"
+                        :class="{ 'border-red-500': formErrors.dev_url && formTouched }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.dev_url && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Development URL is required.
+                      </p>
+                    </div>
+
+                    <!-- New Development Webserver Field -->
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="devWeb"
+                      >
+                        Development Webserver
+                      </label>
+                      <input
+                        v-model="form.dev_web"
+                        @input="formTouched = true"
+                        id="devWeb"
+                        type="text"
+                        :class="{
+                          'border-red-500': formErrors.dev_web && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.dev_web && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Development Webserver is required.
+                      </p>
+                    </div>
+
+                    <!-- New Development Database Field -->
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="devDatabase"
+                      >
+                        Development Database
+                      </label>
+                      <input
+                        v-model="form.dev_database"
+                        @input="formTouched = true"
+                        id="devDatabase"
+                        type="text"
+                        :class="{
+                          'border-red-500': formErrors.dev_database && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.dev_database && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Development Database is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="backUpUrl"
+                      >
+                        Backup URL
+                      </label>
+                      <input
+                        v-model="form.back_up_url"
+                        @input="formTouched = true"
+                        id="backUpUrl"
+                        type="text"
+                        :class="{
+                          'border-red-500': formErrors.back_up_url && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.back_up_url && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Backup URL is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="backUpWeb"
+                      >
+                        Backup Web
+                      </label>
+                      <input
+                        v-model="form.back_up_web"
+                        @input="formTouched = true"
+                        id="backUpWeb"
+                        type="text"
+                        :class="{
+                          'border-red-500': formErrors.back_up_web && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.back_up_web && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Backup Web is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="backUpDatabase"
+                      >
+                        Backup Database
+                      </label>
+                      <input
+                        v-model="form.back_up_database"
+                        @input="formTouched = true"
+                        id="backUpDatabase"
+                        type="text"
+                        :class="{
+                          'border-red-500': formErrors.back_up_database && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.back_up_database && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Backup Database is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="gitName"
+                      >
+                        Git Name
+                      </label>
+                      <input
+                        v-model="form.git_name"
+                        @input="formTouched = true"
+                        id="gitName"
+                        type="text"
+                        :class="{
+                          'border-red-500': formErrors.git_name && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.git_name && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Git Name is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="gitServer"
+                      >
+                        Git Server
+                      </label>
+                      <input
+                        v-model="form.git_server"
+                        @input="formTouched = true"
+                        id="gitServer"
+                        type="text"
+                        :class="{
+                          'border-red-500': formErrors.git_server && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.git_server && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Git Server is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="ssiStatus"
+                      >
+                        SSI Status
+                      </label>
+                      <input
+                        v-model="form.ssi_status"
+                        @input="formTouched = true"
+                        id="ssiStatus"
+                        type="text"
+                        :class="{
+                          'border-red-500': formErrors.ssi_status && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.ssi_status && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        SSI Status is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="ssiRemarks"
+                      >
+                        SSI Remarks
+                      </label>
+                      <input
+                        v-model="form.ssi_remarks"
+                        @input="formTouched = true"
+                        id="ssiRemarks"
+                        type="text"
+                        :class="{
+                          'border-red-500': formErrors.ssi_remarks && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.ssi_remarks && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        SSI Remarks is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="ongoingActivity"
+                      >
+                        Ongoing Activity
+                      </label>
+                      <input
+                        v-model="form.ongoing_activity"
+                        @input="formTouched = true"
+                        id="ongoingActivity"
+                        type="text"
+                        :class="{
+                          'border-red-500': formErrors.ongoing_activity && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <p
+                        v-if="formErrors.ongoing_activity && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Ongoing Activity is required.
                       </p>
                     </div>
 
@@ -398,7 +952,28 @@ const form = ref({
   deployment: "FDTP Portal",
   language: "PHP",
   framework: "",
+  database: "",
+  support_section: "",
   support_developer: "",
+  support_primary: "",
+  support_secondary: "",
+  support_tertiary: "",
+  original_date: null,
+  portal_date: null,
+  prod_path: "",
+  prod_webserver: "",
+  prod_database: "",
+  dev_url: "",
+  dev_web: "",
+  dev_database: "",
+  back_up_url: "",
+  back_up_web: "",
+  back_up_database: "",
+  git_name: "",
+  git_server: "",
+  ssi_status: "",
+  ssi_remarks: "",
+  ongoing_activity: "",
 });
 
 const formErrors = ref({
@@ -414,7 +989,28 @@ const formErrors = ref({
   deployment: false,
   language: false,
   framework: false,
+  database: false,
+  support_section: false,
   support_developer: false,
+  support_primary: false,
+  support_secondary: false,
+  support_tertiary: false,
+  original_date: false,
+  portal_date: false,
+  prod_path: false,
+  prod_webserver: false,
+  prod_database: false,
+  dev_url: false,
+  dev_web: false,
+  dev_database: false,
+  back_up_url: false,
+  back_up_web: false,
+  back_up_database: false,
+  git_name: false,
+  git_server: false,
+  ssi_status: false,
+  ssi_remarks: false,
+  ongoing_activity: false,
 });
 
 const formTouched = ref(false);
@@ -424,6 +1020,12 @@ const save = () => {
   if (validateForm()) {
     const formattedDate = formatDate(form.value.published_at);
     form.value.published_at = formattedDate;
+
+    const formattedOrigDate = formatDate(form.value.original_date);
+    form.value.original_date = formattedOrigDate;
+
+    const formattedPortalDate = formatDate(form.value.portal_date);
+    form.value.portal_date = formattedPortalDate;
 
     emit("onSave", { ...form.value });
     resetForm();
@@ -523,6 +1125,147 @@ const validateForm = () => {
   } else {
     formErrors.value.support_developer = false;
   }
+  if (!form.value.database.trim()) {
+    // Ensure this is checked as a string
+    formErrors.value.database = true;
+    isValid = false;
+  } else {
+    formErrors.value.database = false;
+  }
+  if (!form.value.support_section) {
+    formErrors.value.support_section = true;
+    isValid = false;
+  } else {
+    formErrors.value.support_section = false;
+  }
+  if (!form.value.support_primary.trim()) {
+    // Ensure this is checked as a string
+    formErrors.value.support_primary = true;
+    isValid = false;
+  } else {
+    formErrors.value.support_primary = false;
+  }
+  if (!form.value.support_secondary.trim()) {
+    // Ensure this is checked as a string
+    formErrors.value.support_secondary = true;
+    isValid = false;
+  } else {
+    formErrors.value.support_secondary = false;
+  }
+  if (!form.value.support_tertiary.trim()) {
+    // Ensure this is checked as a string
+    formErrors.value.support_tertiary = true;
+    isValid = false;
+  } else {
+    formErrors.value.support_tertiary = false;
+  }
+  if (!form.value.original_date) {
+    formErrors.value.original_date = true;
+    isValid = false;
+  } else {
+    formErrors.value.original_date = false;
+  }
+  if (!form.value.portal_date) {
+    formErrors.value.portal_date = true;
+    isValid = false;
+  } else {
+    formErrors.value.portal_date = false;
+  }
+  if (!form.value.prod_path.trim()) {
+    // Add validation for prod_path
+    formErrors.value.prod_path = true;
+    isValid = false;
+  } else {
+    formErrors.value.prod_path = false;
+  }
+  if (!form.value.prod_webserver.trim()) {
+    // Add validation for prod_webserver
+    formErrors.value.prod_webserver = true;
+    isValid = false;
+  } else {
+    formErrors.value.prod_webserver = false;
+  }
+  if (!form.value.prod_database.trim()) {
+    // Add validation for prod_database
+    formErrors.value.prod_database = true;
+    isValid = false;
+  } else {
+    formErrors.value.prod_database = false;
+  }
+  if (!form.value.dev_url) {
+    formErrors.value.dev_url = true;
+    isValid = false;
+  } else {
+    formErrors.value.dev_url = false;
+  }
+
+  if (!form.value.dev_web) {
+    formErrors.value.dev_web = true;
+    isValid = false;
+  } else {
+    formErrors.value.dev_web = false;
+  }
+
+  if (!form.value.dev_database) {
+    formErrors.value.dev_database = true;
+    isValid = false;
+  } else {
+    formErrors.value.dev_database = false;
+  }
+  if (!form.value.back_up_url.trim()) {
+    formErrors.value.back_up_url = true;
+    isValid = false;
+  } else {
+    formErrors.value.back_up_url = false;
+  }
+
+  if (!form.value.back_up_web.trim()) {
+    formErrors.value.back_up_web = true;
+    isValid = false;
+  } else {
+    formErrors.value.back_up_web = false;
+  }
+
+  if (!form.value.back_up_database.trim()) {
+    formErrors.value.back_up_database = true;
+    isValid = false;
+  } else {
+    formErrors.value.back_up_database = false;
+  }
+  if (!form.value.git_name.trim()) {
+    formErrors.value.git_name = true;
+    isValid = false;
+  } else {
+    formErrors.value.git_name = false;
+  }
+
+  if (!form.value.git_server.trim()) {
+    formErrors.value.git_server = true;
+    isValid = false;
+  } else {
+    formErrors.value.git_server = false;
+  }
+
+  if (!form.value.ssi_status.trim()) {
+    formErrors.value.ssi_status = true;
+    isValid = false;
+  } else {
+    formErrors.value.ssi_status = false;
+  }
+
+  if (!form.value.ssi_remarks.trim()) {
+    formErrors.value.ssi_remarks = true;
+    isValid = false;
+  } else {
+    formErrors.value.ssi_remarks = false;
+  }
+
+  if (!form.value.ongoing_activity.trim()) {
+    formErrors.value.ongoing_activity = true;
+    isValid = false;
+  } else {
+    formErrors.value.ongoing_activity = false;
+  }
 
   return isValid;
 };
@@ -540,7 +1283,28 @@ const resetForm = () => {
   form.value.deployment = "FDTP Portal";
   form.value.language = "PHP";
   form.value.framework = "";
+  form.value.database = "";
+  form.value.support_section = "";
   form.value.support_developer = "";
+  form.value.support_primary = "";
+  form.value.support_secondary = "";
+  form.value.support_tertiary = "";
+  form.value.original_date = null;
+  form.value.portal_date = null;
+  form.value.prod_path = "";
+  form.value.prod_webserver = "";
+  form.value.prod_database = "";
+  form.value.dev_url = "";
+  form.value.dev_web = "";
+  form.value.dev_database = "";
+  form.value.back_up_url = "";
+  form.value.back_up_web = "";
+  form.value.back_up_database = "";
+  form.value.git_name = "";
+  form.value.git_server = "";
+  form.value.ssi_status = "";
+  form.value.ssi_remarks = "";
+  form.value.ongoing_activity = "";
 
   resetFormErrors();
   formTouched.value = false;
@@ -559,7 +1323,28 @@ const resetFormErrors = () => {
   formErrors.value.deployment = false;
   formErrors.value.language = false;
   formErrors.value.framework = false;
+  formErrors.value.database = false;
+  formErrors.value.support_section = false;
   formErrors.value.support_developer = false;
+  formErrors.value.support_primary = false;
+  formErrors.value.support_secondary = false;
+  formErrors.value.support_tertiary = false;
+  formErrors.value.original_date = false;
+  formErrors.value.portal_date = false;
+  formErrors.value.prod_path = false;
+  formErrors.value.prod_webserver = false;
+  formErrors.value.prod_database = false;
+  formErrors.value.dev_url = false;
+  formErrors.value.dev_web = false;
+  formErrors.value.dev_database = false;
+  formErrors.value.back_up_url = false;
+  formErrors.value.back_up_web = false;
+  formErrors.value.back_up_database = false;
+  formErrors.value.git_name = false;
+  formErrors.value.git_server = false;
+  formErrors.value.ssi_status = false;
+  formErrors.value.ssi_remarks = false;
+  formErrors.value.ongoing_activity = false;
 };
 </script>
 
