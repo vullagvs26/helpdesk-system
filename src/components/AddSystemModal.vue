@@ -113,7 +113,7 @@
                         Release is required.
                       </p>
                     </div>
-                    
+
                     <div class="mb-4">
                       <label
                         class="block text-gray-700 text-sm font-bold mb-2"
@@ -151,11 +151,12 @@
                         v-model="form.deployment"
                         @change="formTouched = true"
                         id="deployment"
-                        :class="{ 'border-red-500': formErrors.deployment && formTouched }"
+                        :class="{
+                          'border-red-500': formErrors.deployment && formTouched,
+                        }"
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       >
                         <option value="FDTP Portal">FDTP Portal</option>
-              
                       </select>
                       <p
                         v-if="formErrors.deployment && formTouched"
@@ -181,8 +182,7 @@
                       >
                         <option value="PHP">PHP</option>
                         <option value="Java">Java</option>
-                        <option value="Python">Python</option>                      
-              
+                        <option value="Python">Python</option>
                       </select>
                       <p
                         v-if="formErrors.language && formTouched"
@@ -212,6 +212,39 @@
                         class="text-red-500 text-xs italic mt-1"
                       >
                         Framework is required.
+                      </p>
+                    </div>
+
+                    <div class="mb-4">
+                      <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="supportDeveloper"
+                      >
+                        Support Developer
+                      </label>
+                      <select
+                        v-model="form.support_developer"
+                        @change="formTouched = true"
+                        id="supportDeveloper"
+                        :class="{
+                          'border-red-500': formErrors.support_developer && formTouched,
+                        }"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      >
+                        <option value="">Select a developer</option>
+                        <option
+                          v-for="(developer, i) in developerStore.getLoadDeveloper"
+                          :key="i"
+                          :value="developer.first_name.toString()"
+                        >
+                          {{ developer.first_name }}
+                        </option>
+                      </select>
+                      <p
+                        v-if="formErrors.support_developer && formTouched"
+                        class="text-red-500 text-xs italic mt-1"
+                      >
+                        Support Developer is required.
                       </p>
                     </div>
 
@@ -335,9 +368,16 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import VueDatepicker from "vue3-datepicker";
 import { formatDate } from "@/utils/dateUtils";
+import { useDeveloperStore } from "@/modules/developer.js";
+
+const developerStore = useDeveloperStore();
+
+onMounted(() => {
+  developerStore.setLoadDeveloper();
+});
 
 const props = defineProps({
   show: Boolean,
@@ -352,12 +392,13 @@ const form = ref({
   description: "",
   status: "Active",
   code_name: "",
-  owner: "", 
+  owner: "",
   release: "",
   type: "Web",
   deployment: "FDTP Portal",
   language: "PHP",
   framework: "",
+  support_developer: "",
 });
 
 const formErrors = ref({
@@ -367,12 +408,13 @@ const formErrors = ref({
   description: false,
   status: false,
   code_name: false,
-  owner: false, 
+  owner: false,
   release: false,
   type: false,
   deployment: false,
   language: false,
   framework: false,
+  support_developer: false,
 });
 
 const formTouched = ref(false);
@@ -436,7 +478,7 @@ const validateForm = () => {
   } else {
     formErrors.value.code_name = false;
   }
-   if (!form.value.owner.trim()) {
+  if (!form.value.owner.trim()) {
     // Add validation for owner
     formErrors.value.owner = true;
     isValid = false;
@@ -474,7 +516,13 @@ const validateForm = () => {
   } else {
     formErrors.value.framework = false;
   }
-
+  if (!form.value.support_developer.trim()) {
+    // Ensure this is checked as a string
+    formErrors.value.support_developer = true;
+    isValid = false;
+  } else {
+    formErrors.value.support_developer = false;
+  }
 
   return isValid;
 };
@@ -492,6 +540,7 @@ const resetForm = () => {
   form.value.deployment = "FDTP Portal";
   form.value.language = "PHP";
   form.value.framework = "";
+  form.value.support_developer = "";
 
   resetFormErrors();
   formTouched.value = false;
@@ -510,6 +559,7 @@ const resetFormErrors = () => {
   formErrors.value.deployment = false;
   formErrors.value.language = false;
   formErrors.value.framework = false;
+  formErrors.value.support_developer = false;
 };
 </script>
 
